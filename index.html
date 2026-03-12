@@ -1567,14 +1567,22 @@ async function startCall() {
   statusEl.textContent = 'Connecting...';
 
   try {
-    // FIX 1: Explicit mic permission request before starting call (mobile browsers)
+    // iOS Safari: unlock AudioContext during this user gesture (tap)
+    await unlockAudio();
+
+    // Explicit mic permission request before starting call (mobile browsers)
+    var testStream;
     try {
-      await navigator.mediaDevices.getUserMedia({ audio: true });
+      testStream = await navigator.mediaDevices.getUserMedia({ audio: true });
     } catch(e) {
       statusEl.className = 'call-status ended';
       statusEl.textContent = '✗ Microphone access denied — tap Allow when prompted';
       document.getElementById('btn-start-call').style.display = 'flex';
       return;
+    }
+    // Stop the test stream so it doesn't conflict with Retell's own stream
+    if (testStream) {
+      testStream.getTracks().forEach(function(t) { t.stop(); });
     }
 
     if (typeof RetellWebClient === 'undefined') {
@@ -1594,8 +1602,23 @@ async function startCall() {
       document.getElementById('speaking-label').textContent = 'Call active';
       window._session.startedAt = new Date().toISOString();
       startCallTimer();
-      // FIX 2: iOS audio playback unlock
-      try { await window._retellClient.startAudioPlayback(); } catch(e) {}
+      // iOS: ensure AudioContext is still running before Retell plays audio
+      var ctx = getSharedAudioCtx();
+      if (ctx && ctx.state === 'suspended') {
+        try { await ctx.resume(); } catch(e) {}
+      }
+      // Tell Retell SDK to start audio playback (required on iOS Safari)
+      try {
+        await window._retellClient.startAudioPlayback();
+      } catch(e) {
+        console.warn('startAudioPlayback failed, retrying in 500ms:', e);
+        // Retry once after a short delay — iOS sometimes needs a moment
+        setTimeout(async function() {
+          try { await window._retellClient.startAudioPlayback(); } catch(e2) {
+            console.error('startAudioPlayback retry failed:', e2);
+          }
+        }, 500);
+      }
       // Hide audio unlock banner if visible
       var banner = document.getElementById('audio-unlock-banner');
       if (banner) banner.style.display = 'none';
@@ -2246,26 +2269,48 @@ function closeMoreDrawer() {
   document.getElementById('more-drawer-overlay').classList.remove('open');
 }
 
-// ===== AUDIO UNLOCK (FIX 3) =====
-function unlockAudio() {
-  var AC = window.AudioContext || window.webkitAudioContext;
-  if (AC) {
-    var ctx = new AC();
-    ctx.resume().then(function() {
-      var banner = document.getElementById('audio-unlock-banner');
-      if (banner) banner.style.display = 'none';
-    });
+// ===== AUDIO UNLOCK (iOS Safari fix) =====
+// Persistent AudioContext — reused across the session so iOS doesn't re-suspend
+window._sharedAudioCtx = null;
+
+function getSharedAudioCtx() {
+  if (!window._sharedAudioCtx || window._sharedAudioCtx.state === 'closed') {
+    var AC = window.AudioContext || window.webkitAudioContext;
+    if (AC) window._sharedAudioCtx = new AC();
+  }
+  return window._sharedAudioCtx;
+}
+
+// Must be called inside a user-gesture handler (click/tap).
+// Creates context, resumes it, and plays a silent buffer to fully unlock
+// iOS Safari's audio pipeline.
+async function unlockAudio() {
+  try {
+    var ctx = getSharedAudioCtx();
+    if (!ctx) return;
+    if (ctx.state === 'suspended') await ctx.resume();
+    // Play a tiny silent buffer — iOS requires actual audio output during a
+    // user gesture before it considers audio "unlocked".
+    var buf = ctx.createBuffer(1, 1, ctx.sampleRate);
+    var src = ctx.createBufferSource();
+    src.buffer = buf;
+    src.connect(ctx.destination);
+    src.start(0);
+    var banner = document.getElementById('audio-unlock-banner');
+    if (banner) banner.style.display = 'none';
+  } catch(e) {
+    console.warn('unlockAudio failed:', e);
   }
 }
+
 function checkAudioContext() {
   var AC = window.AudioContext || window.webkitAudioContext;
   if (AC) {
-    var ctx = new AC();
-    if (ctx.state === 'suspended') {
+    var ctx = getSharedAudioCtx();
+    if (ctx && ctx.state === 'suspended') {
       var banner = document.getElementById('audio-unlock-banner');
       if (banner) banner.style.display = 'block';
     }
-    ctx.close();
   }
 }
 
