@@ -1089,7 +1089,7 @@ window._login = async function() {
         <!-- Call controls -->
         <div class="call-controls">
           <div class="call-status" id="call-status">Ready to start</div>
-          <div class="audio-unlock-banner" id="audio-unlock-banner" onclick="unlockAudio()">🔇 Tap here to enable audio</div>
+          <div class="audio-unlock-banner" id="audio-unlock-banner" onclick="unlockAudio()">🔇 Tap here to enable audio (make sure your ringer switch is not on silent)</div>
           <button class="btn-call start" id="btn-start-call" onclick="startCall()">
             📞 Start Call
           </button>
@@ -2307,12 +2307,23 @@ function checkAudioContext() {
   var AC = window.AudioContext || window.webkitAudioContext;
   if (AC) {
     var ctx = getSharedAudioCtx();
-    if (ctx && ctx.state === 'suspended') {
+    if (ctx && (ctx.state === 'suspended' || ctx.state === 'interrupted')) {
       var banner = document.getElementById('audio-unlock-banner');
       if (banner) banner.style.display = 'block';
     }
   }
 }
+
+// iOS Safari: when user backgrounds the tab or locks the screen, AudioContext
+// transitions to "interrupted". Re-resume it when they come back.
+document.addEventListener('visibilitychange', function() {
+  if (document.visibilityState === 'visible') {
+    var ctx = window._sharedAudioCtx;
+    if (ctx && (ctx.state === 'suspended' || ctx.state === 'interrupted')) {
+      ctx.resume().catch(function(e) { console.warn('AudioContext re-resume failed:', e); });
+    }
+  }
+});
 
 // ===== INIT =====
 (function() {
