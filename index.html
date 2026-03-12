@@ -34,6 +34,7 @@
     body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; }
     input, select, textarea, button { font-family: var(--font); }
     button { cursor: pointer; }
+
     /* ===== LOGIN ===== */
     #login-screen {
       position: fixed; inset: 0; z-index: 9999;
@@ -61,8 +62,10 @@
     .btn-login { width: 100%; padding: 13px; background: var(--accent); color: #fff; border: none; border-radius: 9px; font-size: 14px; font-weight: 700; cursor: pointer; transition: background 0.2s; }
     .btn-login:hover { background: #3a7ec4; }
     .btn-login:disabled { opacity: 0.6; cursor: not-allowed; }
+
     /* ===== LAYOUT ===== */
     .page { max-width: 1320px; margin: 0 auto; padding: 32px 40px 60px; }
+
     /* ===== HEADER ===== */
     .header {
       display: flex; align-items: center; gap: 16px;
@@ -78,9 +81,11 @@
     .h-sub { font-size: 11px; font-weight: 500; color: var(--text-dim); font-family: var(--mono); }
     .h-status { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; color: var(--green); margin-left: auto; }
     .h-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: pulseDot 2s infinite; }
+
     /* ===== PAGE TITLE ===== */
     .page-title { font-size: 28px; font-weight: 800; color: var(--text); letter-spacing: -0.02em; margin-bottom: 6px; }
     .page-sub { font-size: 14px; color: var(--text-mid); line-height: 1.7; max-width: 580px; margin-bottom: 28px; }
+
     /* ===== MODE TABS ===== */
     .mode-tabs { display: flex; gap: 3px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 3px; width: fit-content; margin-bottom: 28px; flex-wrap: wrap; }
     .mode-tab {
@@ -90,6 +95,7 @@
     }
     .mode-tab.active { background: var(--nav); color: #fff; }
     .mode-tab:hover:not(.active) { color: var(--text); background: var(--surface2); }
+
     /* ===== CARDS ===== */
     .card {
       background: var(--bg); border: 1px solid var(--border); border-radius: 16px;
@@ -100,12 +106,14 @@
     .card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
     .card-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
     .card-sub { font-size: 12px; font-weight: 500; color: var(--text-mid); line-height: 1.6; margin-bottom: 22px; }
+
     /* ===== STATS ROW ===== */
     .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 28px; }
     .stat-card { padding: 18px 20px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg); text-align: center; }
     .stat-num { font-size: 28px; font-weight: 700; font-family: var(--mono); color: var(--text); line-height: 1; }
     .stat-label { font-size: 11px; font-weight: 700; color: var(--text-dim); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.06em; }
     .stat-card.highlight .stat-num { color: var(--accent); }
+
     /* ===== BUTTONS ===== */
     .btn-primary {
       padding: 13px 24px; border-radius: 10px; border: none;
@@ -120,8 +128,10 @@
     .btn-secondary:hover { background: var(--surface); }
     .btn-danger { padding: 10px 20px; border-radius: 8px; border: none; background: var(--red); color: #fff; font-size: 13px; font-weight: 700; transition: all 0.15s; }
     .btn-danger:hover { opacity: 0.88; }
+
     /* ===== SECTION LABEL ===== */
     .section-label { font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
+
     /* ===== BADGES ===== */
     .badge { display: inline-flex; align-items: center; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; }
     .badge-blue { background: var(--accent-light); color: var(--accent); }
@@ -130,6 +140,7 @@
     .badge-red { background: var(--red-light); color: var(--red); }
     .badge-purple { background: var(--purple-light); color: var(--purple); }
     .badge-nav { background: var(--nav); color: #fff; }
+
     /* ===== FIELD ===== */
     .field { margin-bottom: 16px; }
     .field label { display: block; font-size: 11px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
@@ -140,9 +151,11 @@
       transition: border-color 0.2s; outline: none;
     }
     .field input:focus, .field select:focus { border-color: var(--accent); background: var(--bg); }
+
     /* ===== MODE CONTENT ===== */
     .mode-content { animation: fadeIn 0.25s ease; }
     .mode-content.hidden { display: none; }
+
     /* ===== DASHBOARD ===== */
     .dash-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
     .dash-kpi {
@@ -162,12 +175,14 @@
     .dash-section-title { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
     .dash-section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
     .dash-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+
     /* Score trend bars */
     .trend-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
     .trend-label { font-size: 11px; font-weight: 700; color: var(--text-mid); width: 80px; flex-shrink: 0; }
     .trend-track { flex: 1; height: 8px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
     .trend-fill { height: 100%; border-radius: 4px; transition: width 0.8s cubic-bezier(0.16,1,0.3,1); }
     .trend-pct { font-size: 12px; font-weight: 700; font-family: var(--mono); width: 38px; text-align: right; }
+
     /* Leaderboard */
     .leader-row { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--border); }
     .leader-row:last-child { border-bottom: none; }
@@ -181,6 +196,7 @@
     .leader-score.c-grade { color: var(--amber); }
     .leader-score.d-grade { color: var(--text-dim); }
     .leader-grade-pill { font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 4px; margin-right: 4px; }
+
     /* Recent sessions table */
     .sess-table { width: 100%; border-collapse: collapse; font-size: 12px; }
     .sess-table th { text-align: left; padding: 8px 12px; font-size: 10px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.07em; background: var(--surface); border-bottom: 1px solid var(--border); }
@@ -191,6 +207,7 @@
     .empty-icon { font-size: 36px; margin-bottom: 12px; }
     .empty-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
     .empty-sub { font-size: 12px; color: var(--text-dim); }
+
     /* ===== CONFIGURE / NEW SESSION ===== */
     .level-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 24px; }
     .level-card {
@@ -207,6 +224,7 @@
     .res-pip { width: 8px; height: 8px; border-radius: 2px; background: var(--border); }
     .res-pip.filled { background: var(--accent); }
     .level-card.active .res-pip.filled { background: var(--accent); }
+
     /* Chips */
     .chips { display: flex; flex-wrap: wrap; gap: 7px; }
     .chip {
@@ -216,6 +234,7 @@
     }
     .chip.active { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
     .chip:hover:not(.active) { border-color: var(--text-dim); color: var(--text); }
+
     /* Friday context card */
     .context-card {
       background: var(--nav); border-radius: 12px; padding: 20px;
@@ -226,9 +245,11 @@
     .context-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulseDot 2s infinite; }
     .context-item { font-size: 12px; color: rgba(255,255,255,0.85); line-height: 1.7; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
     .context-item:last-child { border-bottom: none; }
+
     /* ===== ARENA ===== */
     .arena-layout { display: grid; grid-template-columns: 340px 1fr; gap: 20px; min-height: 600px; }
     .arena-left { display: flex; flex-direction: column; gap: 14px; }
+
     /* Prospect card */
     .prospect-card {
       background: var(--nav); border-radius: 16px; padding: 28px 24px;
@@ -254,6 +275,7 @@
     .resistance-bars { display: flex; gap: 4px; justify-content: center; }
     .res-bar { width: 28px; height: 6px; border-radius: 3px; background: rgba(255,255,255,0.15); }
     .res-bar.active { background: var(--accent); }
+
     /* Score panel */
     .score-panel { background: var(--bg); border: 1px solid var(--border); border-radius: 14px; padding: 20px; }
     .score-panel-title { font-size: 11px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 14px; }
@@ -263,6 +285,7 @@
     .dim-score { font-size: 11px; font-weight: 700; font-family: var(--mono); color: var(--text-dim); }
     .dim-track { height: 6px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
     .dim-fill { height: 100%; border-radius: 3px; transition: width 0.6s cubic-bezier(0.16,1,0.3,1), background 0.4s; }
+
     /* Call controls */
     .call-controls { display: flex; flex-direction: column; gap: 10px; }
     .btn-call {
@@ -279,6 +302,7 @@
     .call-status.connecting { color: var(--amber); }
     .call-status.active { color: var(--green); }
     .call-status.ended { color: var(--text-dim); }
+
     /* Arena right panel */
     .arena-right { display: flex; flex-direction: column; gap: 14px; }
     .transcript-panel { background: var(--bg); border: 1px solid var(--border); border-radius: 14px; padding: 20px; flex: 1; min-height: 380px; display: flex; flex-direction: column; }
@@ -289,6 +313,7 @@
     .bubble.prospect { background: var(--surface); color: var(--text); align-self: flex-start; border-bottom-left-radius: 4px; }
     .bubble.system { background: var(--amber-light); color: var(--amber); align-self: center; font-size: 11px; font-style: italic; border-radius: 20px; padding: 6px 14px; }
     .bubble-meta { font-size: 10px; font-weight: 600; opacity: 0.65; margin-bottom: 4px; }
+
     /* Voice wave */
     .voice-wave { display: flex; align-items: flex-end; gap: 3px; height: 28px; justify-content: center; }
     .wave-bar { width: 4px; border-radius: 2px; background: var(--accent); transition: height 0.1s; }
@@ -299,6 +324,7 @@
     .wave-bar:nth-child(5) { animation: wave1 0.7s ease-in-out infinite 0.4s; }
     .voice-wave.inactive .wave-bar { height: 4px !important; animation: none; background: var(--border); }
     .voice-wave.prospect-speaking .wave-bar { background: var(--green); }
+
     /* Live score chip */
     .score-chip-container { min-height: 52px; }
     .score-chip {
@@ -315,9 +341,11 @@
     .chip-detail { display: flex; flex-direction: column; gap: 2px; }
     .chip-score { font-size: 13px; font-weight: 800; font-family: var(--mono); color: #fff; line-height: 1; }
     .chip-label { font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.6); }
+
     /* Exchange counter */
     .exchange-counter { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--text-mid); padding: 8px 14px; background: var(--surface); border-radius: 8px; }
     .exchange-num { font-family: var(--mono); font-weight: 700; color: var(--text); }
+
     /* ===== RESULTS ===== */
     .results-hero {
       background: var(--nav); border-radius: 20px; padding: 40px;
@@ -358,6 +386,7 @@
     .exch-score { font-size: 14px; font-weight: 800; font-family: var(--mono); }
     .exch-msg { font-size: 12px; color: var(--text-mid); margin-bottom: 6px; font-style: italic; line-height: 1.5; }
     .exch-feedback { font-size: 12px; color: var(--text); line-height: 1.6; }
+
     /* ===== VAULT ===== */
     .vault-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
     .vault-card { background: var(--bg); border: 1px solid var(--border); border-radius: 14px; padding: 22px; cursor: pointer; transition: all 0.2s; }
@@ -369,11 +398,14 @@
     .vault-card.open .vault-response { display: block; }
     .vault-tip { margin-top: 8px; font-size: 11px; color: var(--text-dim); font-style: italic; }
     .vault-toggle { font-size: 11px; font-weight: 700; color: var(--accent); margin-top: 10px; display: flex; align-items: center; gap: 4px; }
+
     /* ===== HISTORY ===== */
     .history-empty { padding: 40px; text-align: center; font-size: 12px; color: var(--text-dim); }
+
     /* ===== SPINNER ===== */
     .spinner-ring { width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; display: inline-block; }
     .loading-row { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: var(--text-mid); padding: 20px 0; }
+
     /* ===== FOOTER ===== */
     .footer { border-top: 1px solid var(--border); padding-top: 20px; margin-top: 40px; display: flex; justify-content: space-between; align-items: center; }
     .footer-brand { display: flex; align-items: baseline; }
@@ -381,15 +413,18 @@
     .footer-brand .ai { font-size: 12px; font-weight: 700; color: var(--accent); }
     .footer-meta { font-size: 11px; color: var(--text-dim); }
     .footer-conf { font-size: 10px; font-weight: 700; color: var(--text-dim); font-family: var(--mono); letter-spacing: 0.06em; }
+
     /* ===== ANIMATIONS ===== */
     @keyframes pulseDot { 0%,100%{transform:scale(1);opacity:0.7} 50%{transform:scale(1.4);opacity:1} }
     @keyframes fadeIn { from{opacity:0} to{opacity:1} }
     @keyframes spin { to{transform:rotate(360deg)} }
     @keyframes bubbleIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
     @keyframes chipIn { from{opacity:0;transform:scale(0.8) translateY(8px)} to{opacity:1;transform:scale(1) translateY(0)} }
+    @keyframes pulse { 0%,100%{opacity:0.4} 50%{opacity:0.7} }
     @keyframes wave1 { 0%,100%{height:6px} 50%{height:20px} }
     @keyframes wave2 { 0%,100%{height:10px} 50%{height:26px} }
     @keyframes wave3 { 0%,100%{height:16px} 50%{height:28px} }
+
     @media (max-width: 1024px) {
       .arena-layout { grid-template-columns: 1fr; }
       .dash-grid { grid-template-columns: repeat(2, 1fr); }
@@ -404,6 +439,7 @@
   </style>
 </head>
 <body>
+
 <!-- ===== LOGIN ===== -->
 <div id="login-screen">
   <div class="login-card">
@@ -425,6 +461,7 @@
     <button class="btn-login" id="btn-login" onclick="window._login()">Sign In</button>
   </div>
 </div>
+
 <script>
 window._login = async function() {
   var SB = "https://zmyexzebcwpqewczvrtx.supabase.co";
@@ -451,15 +488,18 @@ window._login = async function() {
     document.getElementById('app-wrapper').style.display = 'block';
     document.getElementById('user-badge').textContent = window._currentUser.name;
     if (typeof loadDashboard === 'function') loadDashboard();
+    if (typeof loadCoachingPlan === 'function') loadCoachingPlan(window._currentUser.id);
   } catch(err) {
     errEl.textContent = err.message; errEl.style.display = 'block';
     btn.disabled = false; btn.textContent = 'Sign In';
   }
 };
 </script>
+
 <!-- ===== APP ===== -->
 <div id="app-wrapper" style="display:none;">
 <div class="page">
+
   <!-- Header -->
   <div class="header">
     <div class="wordmark"><span class="m">MANAGE</span><span class="ai">AI</span></div>
@@ -477,9 +517,11 @@ window._login = async function() {
       <button onclick="logout()" style="background:none;border:1.5px solid var(--border);border-radius:6px;padding:5px 12px;font-size:11px;font-weight:600;color:var(--text-mid);cursor:pointer;font-family:var(--font);">Sign Out</button>
     </div>
   </div>
+
   <!-- Page Title -->
   <div class="page-title">Sales Training Arena</div>
   <p class="page-sub">Practice live pitches against AI prospects powered by Claude. Get scored on Technique, Empathy, Clarity, and Advancement after every exchange. Friday context loads real client data from your vertical.</p>
+
   <!-- Mode Tabs -->
   <div class="mode-tabs">
     <button class="mode-tab active" onclick="setMode('dashboard')" id="tab-dashboard">📊 Dashboard</button>
@@ -488,9 +530,14 @@ window._login = async function() {
     <button class="mode-tab" onclick="setMode('results')" id="tab-results">📋 Results</button>
     <button class="mode-tab" onclick="setMode('vault')" id="tab-vault">🗄️ Objection Vault</button>
     <button class="mode-tab" onclick="setMode('history')" id="tab-history">📁 History</button>
+    <button class="mode-tab" onclick="setMode('suggestions')" id="tab-suggestions">💡 Suggestions</button>
+    <button class="mode-tab" onclick="setMode('feedback')" id="tab-feedback">🐛 Feedback</button>
+    <button class="mode-tab" onclick="setMode('scenario')" id="tab-scenario">🎯 Scenario Builder</button>
   </div>
+
   <!-- ==================== DASHBOARD ==================== -->
   <div id="mode-dashboard" class="mode-content">
+
     <div class="dash-grid">
       <div class="dash-kpi dash-kpi-accent">
         <div class="dash-kpi-label">Total Sessions</div>
@@ -513,7 +560,40 @@ window._login = async function() {
         <div class="dash-kpi-sub">Days training</div>
       </div>
     </div>
+
+    <div id="coaching-card" style="margin-bottom:24px;">
+      <div id="coaching-loading" class="card" style="padding:20px;display:flex;align-items:center;gap:12px;">
+        <div style="width:40px;height:40px;border-radius:50%;background:var(--surface2);animation:pulse 1.5s infinite;flex-shrink:0;"></div>
+        <div style="flex:1;">
+          <div style="height:12px;background:var(--surface2);border-radius:4px;margin-bottom:8px;animation:pulse 1.5s infinite;"></div>
+          <div style="height:10px;background:var(--surface2);border-radius:4px;width:60%;animation:pulse 1.5s infinite;"></div>
+        </div>
+      </div>
+      <div id="coaching-content" style="display:none;" class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+          <div style="font-weight:700;font-size:14px;">🎯 Your Coaching Plan</div>
+          <div id="coaching-recommended" style="font-size:11px;background:var(--nav);color:#fff;padding:4px 10px;border-radius:20px;font-weight:600;"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+          <div style="background:#d1fae5;border-radius:8px;padding:12px;">
+            <div style="font-size:10px;font-weight:700;color:#065f46;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;">💪 Strength</div>
+            <div id="coaching-strength" style="font-size:13px;color:#065f46;font-weight:500;"></div>
+          </div>
+          <div style="background:#fee2e2;border-radius:8px;padding:12px;">
+            <div style="font-size:10px;font-weight:700;color:#991b1b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;">🎯 Focus Area</div>
+            <div id="coaching-weakness" style="font-size:13px;color:#991b1b;font-weight:500;"></div>
+          </div>
+        </div>
+        <div style="margin-bottom:16px;">
+          <div style="font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">This Week's Reps</div>
+          <div id="coaching-points" style="display:flex;flex-direction:column;gap:6px;"></div>
+        </div>
+        <button id="coaching-cta" class="btn-primary" style="width:100%;padding:11px;font-size:13px;" onclick="startRecommendedSession()">▶ Start Recommended Session</button>
+      </div>
+    </div>
+
     <div class="dash-2col">
+
       <!-- Score breakdown -->
       <div class="card" style="margin-bottom:0;">
         <div class="dash-section-title">Average Scores by Dimension</div>
@@ -537,6 +617,7 @@ window._login = async function() {
           <div class="trend-track"><div class="trend-fill" id="d-adv-bar" style="width:0%;background:var(--amber)"></div></div>
           <div class="trend-pct" id="d-adv-val" style="color:var(--amber)">—</div>
         </div>
+
         <div style="margin-top:24px;">
           <div class="dash-section-title">Sessions by Level</div>
           <div id="d-level-dist">
@@ -544,6 +625,7 @@ window._login = async function() {
           </div>
         </div>
       </div>
+
       <!-- Leaderboard -->
       <div class="card" style="margin-bottom:0;">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
@@ -553,6 +635,14 @@ window._login = async function() {
         <div id="d-leaderboard">
           <div class="loading-row"><div class="spinner-ring"></div> Loading…</div>
         </div>
+
+        <div style="margin-top:24px;">
+          <div style="font-weight:700;font-size:14px;margin-bottom:12px;">⚡ Team Learning Feed</div>
+          <div id="learning-feed-container">
+            <div style="color:var(--text-dim);font-size:13px;text-align:center;padding:24px;">Loading team highlights...</div>
+          </div>
+        </div>
+
         <div style="margin-top:24px;">
           <div class="dash-section-title">My Recent Sessions</div>
           <div id="d-recent-sessions">
@@ -561,17 +651,20 @@ window._login = async function() {
         </div>
       </div>
     </div>
+
     <div style="margin-top:20px;">
       <button class="btn-primary" onclick="setMode('configure')" style="padding:14px 32px;font-size:14px;">
         🎯 Start New Session
       </button>
     </div>
   </div>
+
   <!-- ==================== CONFIGURE ==================== -->
   <div id="mode-configure" class="mode-content hidden">
     <div class="card">
       <div class="card-title">Configure Your Session</div>
       <div class="card-sub">Choose your difficulty level and vertical. ManageAI Friday will inject real client context at Level 3+.</div>
+
       <!-- Level selector -->
       <div class="section-label" style="margin-bottom:12px;">Difficulty Level</div>
       <div class="level-grid" id="level-grid">
@@ -616,6 +709,7 @@ window._login = async function() {
           </div>
         </div>
       </div>
+
       <!-- Vertical selector -->
       <div class="section-label" style="margin-top:8px;margin-bottom:12px;">Industry Vertical</div>
       <div class="chips" id="vertical-chips">
@@ -625,11 +719,27 @@ window._login = async function() {
         <button class="chip" data-v="behavioral_health" onclick="selectVertical(this)">🧠 Behavioral Health</button>
         <button class="chip" data-v="general_smb" onclick="selectVertical(this)">💼 General SMB</button>
       </div>
+
+      <div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--border);">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <label style="position:relative;display:inline-block;width:40px;height:22px;">
+            <input type="checkbox" id="custom-scenario-toggle" onchange="toggleCustomScenario()" style="opacity:0;width:0;height:0;">
+            <span style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:var(--border);border-radius:22px;transition:.3s;" id="custom-toggle-slider"></span>
+          </label>
+          <span style="font-size:13px;font-weight:600;">Use Custom Scenario</span>
+        </div>
+        <div id="custom-scenario-input" style="display:none;">
+          <label style="font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px;">Describe Your Prospect</label>
+          <textarea id="custom-prospect-desc" rows="3" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;resize:vertical;background:var(--surface);color:var(--text);" placeholder="e.g. CFO at a 50-person construction company in Phoenix, skeptical of technology, had a bad experience with a previous software vendor..."></textarea>
+        </div>
+      </div>
+
       <!-- Friday context card -->
       <div class="context-card" id="friday-context-card">
         <div class="context-title"><div class="context-dot"></div> FRIDAY Context Loaded</div>
         <div id="friday-context-items"></div>
       </div>
+
       <!-- Session config summary -->
       <div style="display:flex;align-items:center;gap:12px;margin-top:24px;padding:16px;background:var(--surface);border-radius:12px;">
         <div style="flex:1;">
@@ -644,16 +754,20 @@ window._login = async function() {
           Start Session →
         </button>
       </div>
+
       <div id="session-loading" style="display:none;padding:20px 0;">
         <div class="loading-row"><div class="spinner-ring"></div> <span id="session-loading-text">Generating prospect profile...</span></div>
       </div>
     </div>
   </div>
+
   <!-- ==================== ARENA ==================== -->
   <div id="mode-arena" class="mode-content hidden">
     <div class="arena-layout">
+
       <!-- Left: Prospect + Score + Controls -->
       <div class="arena-left">
+
         <!-- Prospect card -->
         <div class="prospect-card" id="prospect-card">
           <div class="prospect-avatar" id="prospect-avatar">?</div>
@@ -668,6 +782,7 @@ window._login = async function() {
             <div class="resistance-bars" id="resistance-bars"></div>
           </div>
         </div>
+
         <!-- Live score panel -->
         <div class="score-panel">
           <div class="score-panel-title">Live Scores</div>
@@ -688,6 +803,7 @@ window._login = async function() {
             <div class="dim-track"><div class="dim-fill" id="dim-adv-bar" style="width:0%;background:var(--amber)"></div></div>
           </div>
         </div>
+
         <!-- Call controls -->
         <div class="call-controls">
           <div class="call-status" id="call-status">Ready to start</div>
@@ -699,9 +815,12 @@ window._login = async function() {
           </button>
           <button class="btn-secondary" onclick="setMode('configure')" style="text-align:center;font-size:12px;">← Back to Configure</button>
         </div>
+
       </div>
+
       <!-- Right: Transcript + Score chip -->
       <div class="arena-right">
+
         <!-- Voice wave + exchange counter -->
         <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:var(--bg);border:1px solid var(--border);border-radius:14px;">
           <div class="voice-wave inactive" id="voice-wave">
@@ -716,10 +835,12 @@ window._login = async function() {
             Exchange <span class="exchange-num" id="exchange-num">0</span>
           </div>
         </div>
+
         <!-- Live score chip -->
         <div class="score-chip-container" id="score-chip-container">
           <div style="padding:14px 0;font-size:12px;color:var(--text-dim);font-style:italic;">Score appears after each exchange...</div>
         </div>
+
         <!-- Transcript -->
         <div class="transcript-panel">
           <div class="transcript-title">
@@ -730,16 +851,20 @@ window._login = async function() {
             <div class="bubble system">Call not started — press Start Call to begin</div>
           </div>
         </div>
+
       </div>
     </div>
   </div>
+
   <!-- ==================== RESULTS ==================== -->
   <div id="mode-results" class="mode-content hidden">
+
     <div class="results-hero">
       <div class="grade-circle b" id="result-grade-circle">B</div>
       <div class="results-score" id="result-overall-score">—</div>
       <div class="results-sub" id="result-summary">Session results will appear here</div>
     </div>
+
     <div class="results-grid">
       <div class="results-dim-card">
         <div class="rdim-name">Technique</div>
@@ -766,6 +891,7 @@ window._login = async function() {
         <div class="rdim-desc">Did you move toward a concrete next step? Demo booked, decision maker intro, follow-up committed. Every call should end with a specific action.</div>
       </div>
     </div>
+
     <div class="feedback-card">
       <div class="feedback-label">🌟 Top Highlight</div>
       <div class="feedback-text" id="r-highlight">—</div>
@@ -774,16 +900,19 @@ window._login = async function() {
       <div class="feedback-label">🎯 Primary Improvement</div>
       <div class="feedback-text" id="r-improvement">—</div>
     </div>
+
     <div style="margin-top:8px;">
       <div class="section-label" style="margin-bottom:14px;">Exchange Breakdown</div>
       <div id="r-exchanges"></div>
     </div>
+
     <div style="display:flex;gap:12px;margin-top:24px;flex-wrap:wrap;">
       <button class="btn-primary" onclick="setMode('configure')" style="padding:13px 28px;">🔄 New Session</button>
       <button class="btn-secondary" onclick="setMode('vault')" style="padding:13px 20px;">🗄️ Study Objection Vault</button>
       <button class="btn-secondary" onclick="setMode('history')" style="padding:13px 20px;">📁 View History</button>
     </div>
   </div>
+
   <!-- ==================== VAULT ==================== -->
   <div id="mode-vault" class="mode-content hidden">
     <div class="card" style="margin-bottom:20px;">
@@ -794,6 +923,7 @@ window._login = async function() {
       <!-- Populated by JS -->
     </div>
   </div>
+
   <!-- ==================== HISTORY ==================== -->
   <div id="mode-history" class="mode-content hidden">
     <div class="card">
@@ -804,22 +934,159 @@ window._login = async function() {
       </div>
     </div>
   </div>
+
+  <!-- ==================== SUGGESTIONS ==================== -->
+  <div id="mode-suggestions" class="mode-content hidden">
+    <h2 style="font-size:18px;font-weight:700;margin-bottom:6px;">💡 Suggestions</h2>
+    <p style="color:var(--text-dim);font-size:13px;margin-bottom:24px;">Submit objections you've heard in the field or ideas to improve the AI trainer.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+      <div class="card">
+        <div style="font-weight:700;font-size:14px;margin-bottom:16px;">➕ Add a Real Objection</div>
+        <div style="margin-bottom:12px;">
+          <label style="font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px;">Objection You Heard</label>
+          <textarea id="sug-objection" rows="3" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;resize:vertical;background:var(--surface);color:var(--text);" placeholder="e.g. We tried automation with another vendor and it was a disaster..."></textarea>
+        </div>
+        <div style="margin-bottom:12px;">
+          <label style="font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px;">How You Handled It</label>
+          <textarea id="sug-response" rows="3" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;resize:vertical;background:var(--surface);color:var(--text);" placeholder="What did you say? What worked?"></textarea>
+        </div>
+        <div style="margin-bottom:16px;">
+          <label style="font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px;">Vertical</label>
+          <select id="sug-vertical" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;background:var(--surface);color:var(--text);">
+            <option value="general_smb">General SMB</option>
+            <option value="construction">Construction</option>
+            <option value="medical_transport">Medical Transport</option>
+            <option value="automotive">Automotive</option>
+            <option value="behavioral_health">Behavioral Health</option>
+          </select>
+        </div>
+        <button class="btn-primary" onclick="submitSuggestion('objection')" style="width:100%;padding:12px;">Submit Objection</button>
+      </div>
+      <div class="card">
+        <div style="font-weight:700;font-size:14px;margin-bottom:16px;">🤖 Improve the AI</div>
+        <div style="margin-bottom:12px;">
+          <label style="font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px;">Your Suggestion</label>
+          <textarea id="sug-idea" rows="5" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;resize:vertical;background:var(--surface);color:var(--text);" placeholder="e.g. The prospect at Level 3 gives up too easily..."></textarea>
+        </div>
+        <div style="margin-bottom:16px;">
+          <label style="font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px;">Category</label>
+          <select id="sug-category" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;background:var(--surface);color:var(--text);">
+            <option value="persona_behavior">Persona Behavior</option>
+            <option value="scoring">Scoring & Feedback</option>
+            <option value="objections">Objection Vault</option>
+            <option value="ui_ux">UI / UX</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <button class="btn-primary" onclick="submitSuggestion('idea')" style="width:100%;padding:12px;">Submit Idea</button>
+      </div>
+    </div>
+    <div id="sug-toast" style="display:none;margin-top:16px;padding:12px 16px;background:#d1fae5;border:1px solid #6ee7b7;border-radius:8px;color:#065f46;font-size:13px;font-weight:600;">✅ Submitted! Thanks — Brian will review it.</div>
+  </div>
+
+  <!-- ==================== FEEDBACK ==================== -->
+  <div id="mode-feedback" class="mode-content hidden">
+    <h2 style="font-size:18px;font-weight:700;margin-bottom:6px;">🐛 System Feedback</h2>
+    <p style="color:var(--text-dim);font-size:13px;margin-bottom:24px;">Report a bug or tell us how the system is performing. Goes directly to Brian.</p>
+    <div class="card" style="max-width:600px;">
+      <div style="margin-bottom:12px;">
+        <label style="font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px;">Type</label>
+        <select id="fb-type" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;background:var(--surface);color:var(--text);">
+          <option value="bug">🐛 Bug Report</option>
+          <option value="performance">⚡ Performance Issue</option>
+          <option value="ai_quality">🤖 AI Quality Issue</option>
+          <option value="general">💬 General Feedback</option>
+        </select>
+      </div>
+      <div style="margin-bottom:12px;">
+        <label style="font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px;">Subject</label>
+        <input id="fb-subject" type="text" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;background:var(--surface);color:var(--text);" placeholder="Short description of the issue" />
+      </div>
+      <div style="margin-bottom:12px;">
+        <label style="font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px;">Details</label>
+        <textarea id="fb-details" rows="5" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;resize:vertical;background:var(--surface);color:var(--text);" placeholder="What happened? What did you expect? Steps to reproduce..."></textarea>
+      </div>
+      <div style="margin-bottom:16px;">
+        <label style="font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px;">Severity</label>
+        <select id="fb-severity" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;background:var(--surface);color:var(--text);">
+          <option value="low">Low — Minor annoyance</option>
+          <option value="medium">Medium — Affects usability</option>
+          <option value="high">High — Blocking use</option>
+          <option value="critical">Critical — System broken</option>
+        </select>
+      </div>
+      <button class="btn-primary" onclick="submitFeedback()" style="width:100%;padding:13px;font-size:14px;">Send to Brian</button>
+    </div>
+    <div id="fb-toast" style="display:none;margin-top:16px;padding:12px 16px;background:#d1fae5;border:1px solid #6ee7b7;border-radius:8px;color:#065f46;font-size:13px;font-weight:600;max-width:600px;">✅ Sent! Brian will be notified at brian@manageai.io.</div>
+  </div>
+
+  <!-- ==================== SCENARIO BUILDER ==================== -->
+  <div id="mode-scenario" class="mode-content hidden">
+    <h2 style="font-size:18px;font-weight:700;margin-bottom:6px;">🎯 Scenario Builder</h2>
+    <p style="color:var(--text-dim);font-size:13px;margin-bottom:24px;">Describe a real prospect you're working or a type of company you want to practice on. The AI generates a hyper-realistic persona.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+      <div class="card">
+        <div style="font-weight:700;font-size:14px;margin-bottom:16px;">Describe Your Prospect</div>
+        <div style="margin-bottom:12px;">
+          <label style="font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px;">Prospect Description</label>
+          <textarea id="sc-description" rows="5" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;resize:vertical;background:var(--surface);color:var(--text);" placeholder="e.g. CFO at a 200-person behavioral health org in Tucson. Just got burned by a Zapier consultant. CEO wants to modernize but CFO is skeptical of AI spend..."></textarea>
+        </div>
+        <div style="margin-bottom:12px;">
+          <label style="font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px;">Vertical</label>
+          <select id="sc-vertical" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;background:var(--surface);color:var(--text);">
+            <option value="general_smb">General SMB</option>
+            <option value="construction">Construction</option>
+            <option value="medical_transport">Medical Transport</option>
+            <option value="automotive">Automotive</option>
+            <option value="behavioral_health">Behavioral Health</option>
+          </select>
+        </div>
+        <div style="margin-bottom:16px;">
+          <label style="font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px;">Difficulty Level</label>
+          <div style="display:flex;gap:8px;">
+            <button class="sc-level-btn" data-level="1" onclick="setScenarioLevel(1)" style="flex:1;padding:8px;border:1px solid var(--border);border-radius:6px;background:var(--surface);font-size:12px;font-weight:600;cursor:pointer;">1</button>
+            <button class="sc-level-btn" data-level="2" onclick="setScenarioLevel(2)" style="flex:1;padding:8px;border:1px solid var(--border);border-radius:6px;background:var(--surface);font-size:12px;font-weight:600;cursor:pointer;">2</button>
+            <button class="sc-level-btn" data-level="3" onclick="setScenarioLevel(3)" style="flex:1;padding:8px;border:1px solid var(--border);border-radius:6px;background:var(--nav);color:#fff;font-size:12px;font-weight:600;cursor:pointer;">3</button>
+            <button class="sc-level-btn" data-level="4" onclick="setScenarioLevel(4)" style="flex:1;padding:8px;border:1px solid var(--border);border-radius:6px;background:var(--surface);font-size:12px;font-weight:600;cursor:pointer;">4</button>
+            <button class="sc-level-btn" data-level="5" onclick="setScenarioLevel(5)" style="flex:1;padding:8px;border:1px solid var(--border);border-radius:6px;background:var(--surface);font-size:12px;font-weight:600;cursor:pointer;">5</button>
+          </div>
+        </div>
+        <button class="btn-primary" onclick="buildScenario()" style="width:100%;padding:13px;font-size:14px;">⚡ Generate Persona</button>
+      </div>
+      <div class="card" id="sc-persona-card" style="display:none;">
+        <div style="font-weight:700;font-size:14px;margin-bottom:16px;">Generated Persona</div>
+        <div id="sc-persona-content"></div>
+        <button class="btn-primary" onclick="trainAgainstScenario()" style="width:100%;padding:13px;font-size:14px;margin-top:16px;">🎯 Train Against This Prospect</button>
+      </div>
+      <div id="sc-loading" style="display:none;" class="card">
+        <div style="text-align:center;padding:40px 20px;color:var(--text-dim);">
+          <div style="font-size:32px;margin-bottom:12px;">🤖</div>
+          <div style="font-weight:600;">Building your prospect...</div>
+          <div style="font-size:12px;margin-top:6px;">Claude is generating a hyper-realistic persona</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Footer -->
   <div class="footer">
     <div style="display:flex;align-items:center;gap:6px;">
       <div class="footer-brand"><span class="m">MANAGE</span><span class="ai">AI</span></div>
-      <span class="footer-meta"> · AI Sales Trainer v1.0 · 2026</span>
+      <span class="footer-meta"> · AI Sales Trainer v1.5 · 2026</span>
     </div>
     <div class="footer-conf">CONFIDENTIAL — INTERNAL USE ONLY</div>
   </div>
+
 </div><!-- /page -->
 </div><!-- /app-wrapper -->
+
 <script>
 // ===== CONFIG =====
 const SB_URL = "https://zmyexzebcwpqewczvrtx.supabase.co";
 const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpteWV4emViY3dwcWV3Y3p2cnR4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3ODE5NDEsImV4cCI6MjA4ODM1Nzk0MX0.ajd3XAslr37xQ5C3TIx-F2BwdKgczm1r2W7MfFIf38s";
 const SB_SERVICE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpteWV4emViY3dwcWV3Y3p2cnR4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3Mjc4MTk0MSwiZXhwIjoyMDg4MzU3OTQxfQ.OuEeXnGlF_yDVbkWsYxiGEWmHnmS1OPaPM-3knJAjDU";
-const N8N_BASE = "https://n8n.manageai.io/webhook";
+const N8N_BASE = "https://manageai2026.app.n8n.cloud/webhook";
+
 // ===== SESSION STATE =====
 window._session = {
   id: null, persona: null, accessToken: null, callId: null,
@@ -829,22 +1096,29 @@ window._session = {
   exchangeCount: 0, startedAt: null,
   lastRepMsg: null, lastTranscriptLen: 0
 };
+
 window._retellClient = null;
 window._callTimer = null;
 window._callSeconds = 0;
 window._scoringInProgress = false;
+
 // ===== MODE =====
 function setMode(mode) {
-  ['dashboard','configure','arena','results','vault','history'].forEach(m => {
+  ['dashboard','configure','arena','results','vault','history','suggestions','feedback','scenario'].forEach(m => {
     const el = document.getElementById('mode-' + m);
     if (el) el.classList.toggle('hidden', m !== mode);
     const tab = document.getElementById('tab-' + m);
     if (tab) tab.classList.toggle('active', m === mode);
   });
-  if (mode === 'dashboard') loadDashboard();
+  if (mode === 'dashboard') {
+    loadDashboard();
+    loadLearningFeed();
+    if (window._currentUser) loadCoachingPlan(window._currentUser.id);
+  }
   if (mode === 'history') loadHistory();
   if (mode === 'vault') renderVault();
 }
+
 // ===== AUTH =====
 function logout() {
   sessionStorage.removeItem('st_token'); sessionStorage.removeItem('st_user');
@@ -852,6 +1126,7 @@ function logout() {
   document.getElementById('login-screen').style.display = 'flex';
   document.getElementById('app-wrapper').style.display = 'none';
 }
+
 // ===== SUPABASE =====
 async function sbAdmin(method, path, body) {
   try {
@@ -867,6 +1142,7 @@ async function sbAdmin(method, path, body) {
     return await resp.json();
   } catch { return null; }
 }
+
 // ===== CONFIGURE =====
 function selectLevel(n, el) {
   window._session.level = n;
@@ -874,6 +1150,7 @@ function selectLevel(n, el) {
   el.classList.add('active');
   const names = {1:'Rookie',2:'Developing',3:'Competent',4:'Advanced',5:'Elite'};
   document.getElementById('cfg-level-disp').textContent = n + ' — ' + names[n];
+  // Show Friday context note for Level 3+
   const fridayDisp = document.getElementById('cfg-friday-disp');
   if (n >= 3) {
     fridayDisp.textContent = 'Friday context: enabled ✓';
@@ -883,14 +1160,17 @@ function selectLevel(n, el) {
     fridayDisp.style.color = 'var(--text-dim)';
   }
 }
+
 function selectVertical(el) {
   document.querySelectorAll('#vertical-chips .chip').forEach(c => c.classList.remove('active'));
   el.classList.add('active');
   window._session.vertical = el.dataset.v;
   const labels = {construction:'Construction',medical_transport:'Medical Transport',automotive:'Automotive',behavioral_health:'Behavioral Health',general_smb:'General SMB'};
   document.getElementById('cfg-vertical-disp').textContent = labels[el.dataset.v] || el.dataset.v;
+  // Load Friday context if Level 3+
   if (window._session.level >= 3) loadFridayContext(el.dataset.v);
 }
+
 async function loadFridayContext(vertical) {
   try {
     const rows = await sbAdmin('GET', 'jarvis_context?vertical=eq.' + vertical + '&active=eq.true&limit=3');
@@ -903,6 +1183,7 @@ async function loadFridayContext(vertical) {
     ).join('');
   } catch(e) {}
 }
+
 // ===== START SESSION =====
 async function startSession() {
   const btn = document.getElementById('btn-start-session');
@@ -910,12 +1191,14 @@ async function startSession() {
   const loadingText = document.getElementById('session-loading-text');
   btn.style.display = 'none';
   loadingEl.style.display = 'block';
+
   const steps = ['Generating prospect profile...', 'Loading Friday context...', 'Registering Retell call...', 'Ready!'];
   let step = 0;
   const stepInterval = setInterval(() => {
     step = Math.min(step + 1, steps.length - 1);
     loadingText.textContent = steps[step];
   }, 1800);
+
   try {
     const resp = await fetch(N8N_BASE + '/generate-persona', {
       method: 'POST',
@@ -952,22 +1235,27 @@ async function startSession() {
     }, 4000);
   }
 }
+
 // ===== INIT ARENA =====
 function initArena(persona) {
   if (!persona) return;
+  // Avatar initials
   const initials = (persona.name || '??').split(' ').map(w => w[0]).join('').substring(0,2).toUpperCase();
   document.getElementById('prospect-avatar').textContent = initials;
   document.getElementById('prospect-name').textContent = persona.name || 'Unknown';
   document.getElementById('prospect-role').textContent = (persona.role || '') + (persona.company ? ' @ ' + persona.company : '');
   document.getElementById('prospect-company').textContent = persona.company || '—';
   document.getElementById('prospect-city').textContent = persona.city || '—';
+  // Resistance bars
   const barsEl = document.getElementById('resistance-bars');
   const level = window._session.level;
   barsEl.innerHTML = [1,2,3,4,5].map(i =>
     '<div class="res-bar' + (i <= level ? ' active' : '') + '"></div>'
   ).join('');
+  // Reset transcript
   document.getElementById('transcript-feed').innerHTML = '';
   addBubble('system', 'Call ready — press Start Call to connect with ' + (persona.name || 'your prospect'));
+  // Reset scores
   updateDimBars(0, 0, 0, 0);
   document.getElementById('exchange-num').textContent = '0';
   document.getElementById('score-chip-container').innerHTML = '<div style="padding:14px 0;font-size:12px;color:var(--text-dim);font-style:italic;">Score appears after each exchange...</div>';
@@ -978,6 +1266,7 @@ function initArena(persona) {
   document.getElementById('voice-wave').className = 'voice-wave inactive';
   document.getElementById('speaking-label').textContent = 'Press Start Call to begin';
 }
+
 // ===== RETELL CALL =====
 async function startCall() {
   if (!window._session.accessToken) {
@@ -988,10 +1277,12 @@ async function startCall() {
   const statusEl = document.getElementById('call-status');
   statusEl.className = 'call-status connecting';
   statusEl.textContent = 'Connecting...';
+
   try {
     window._retellClient = new RetellWebClient();
     window._session.lastTranscriptLen = 0;
     window._session.lastRepMsg = null;
+
     window._retellClient.on('call_started', () => {
       statusEl.className = 'call-status active';
       statusEl.textContent = '● Live — ' + (window._session.persona?.name || 'Prospect');
@@ -1000,21 +1291,25 @@ async function startCall() {
       window._session.startedAt = new Date().toISOString();
       startCallTimer();
     });
+
     window._retellClient.on('agent_start_talking', () => {
       const wave = document.getElementById('voice-wave');
       wave.className = 'voice-wave prospect-speaking';
       document.getElementById('speaking-label').textContent = (window._session.persona?.name || 'Prospect') + ' is speaking...';
     });
+
     window._retellClient.on('agent_stop_talking', () => {
       const wave = document.getElementById('voice-wave');
       wave.className = 'voice-wave';
       document.getElementById('speaking-label').textContent = 'Your turn to speak';
     });
+
     window._retellClient.on('update', (update) => {
       if (update.transcript && update.transcript.length) {
         handleTranscriptUpdate(update.transcript);
       }
     });
+
     window._retellClient.on('call_ended', () => {
       statusEl.className = 'call-status ended';
       statusEl.textContent = 'Call ended';
@@ -1025,6 +1320,7 @@ async function startCall() {
       addBubble('system', 'Call ended — saving session...');
       setTimeout(saveAndShowResults, 1500);
     });
+
     window._retellClient.on('error', (err) => {
       console.error('Retell error:', err);
       statusEl.className = 'call-status ended';
@@ -1032,6 +1328,7 @@ async function startCall() {
       document.getElementById('btn-start-call').style.display = 'flex';
       document.getElementById('btn-end-call').style.display = 'none';
     });
+
     await window._retellClient.startCall({ accessToken: window._session.accessToken });
   } catch(e) {
     statusEl.className = 'call-status ended';
@@ -1039,6 +1336,7 @@ async function startCall() {
     document.getElementById('btn-start-call').style.display = 'flex';
   }
 }
+
 function endCall() {
   if (window._retellClient) {
     window._retellClient.stopCall();
@@ -1046,18 +1344,24 @@ function endCall() {
     saveAndShowResults();
   }
 }
+
 // ===== TRANSCRIPT =====
 function handleTranscriptUpdate(transcript) {
   if (transcript.length <= window._session.lastTranscriptLen) return;
   window._session.lastTranscriptLen = transcript.length;
+
+  // Rebuild transcript feed
   const feed = document.getElementById('transcript-feed');
   feed.innerHTML = '';
   transcript.forEach(msg => {
     const role = msg.role === 'agent' ? 'prospect' : 'rep';
     addBubble(role, msg.content);
   });
+
+  // Detect new rep turn completed (when last message is prospect speaking = rep just spoke + got response)
   const last = transcript[transcript.length - 1];
   if (last && last.role === 'agent') {
+    // Find the rep's last message
     for (let i = transcript.length - 2; i >= 0; i--) {
       if (transcript[i].role === 'user') {
         const repMsg = transcript[i].content;
@@ -1073,8 +1377,11 @@ function handleTranscriptUpdate(transcript) {
       }
     }
   }
+
+  // Scroll to bottom
   feed.scrollTop = feed.scrollHeight;
 }
+
 function addBubble(role, text) {
   const feed = document.getElementById('transcript-feed');
   const div = document.createElement('div');
@@ -1085,11 +1392,13 @@ function addBubble(role, text) {
   feed.appendChild(div);
   feed.scrollTop = feed.scrollHeight;
 }
+
 function esc(s) {
   const d = document.createElement('div');
   d.textContent = s || '';
   return d.innerHTML;
 }
+
 // ===== SCORING =====
 async function scoreExchange(repMsg, exchangeNum) {
   if (!window._session.id) return;
@@ -1126,8 +1435,10 @@ async function scoreExchange(repMsg, exchangeNum) {
     window._scoringInProgress = false;
   }
 }
+
 function updateLiveScores(scores) {
   const { technique = 0, empathy = 0, clarity = 0, advancement = 0 } = scores;
+  // Update running averages
   const exch = window._session.exchanges;
   if (exch.length) {
     const avgs = { technique: 0, empathy: 0, clarity: 0, advancement: 0 };
@@ -1142,6 +1453,7 @@ function updateLiveScores(scores) {
     updateDimBars(avgs.technique, avgs.empathy, avgs.clarity, avgs.advancement);
   }
 }
+
 function updateDimBars(tech, emp, clar, adv) {
   function scoreColor(s) {
     if (s >= 80) return 'var(--green)';
@@ -1156,6 +1468,7 @@ function updateDimBars(tech, emp, clar, adv) {
     if (val) { val.textContent = v ? v : '—'; val.style.color = v ? scoreColor(v) : 'var(--text-dim)'; }
   });
 }
+
 function showScoreChip(scores) {
   const overall = Math.round(((scores.technique || 0) + (scores.empathy || 0) + (scores.clarity || 0) + (scores.advancement || 0)) / 4);
   const grade = getGrade(overall);
@@ -1164,10 +1477,12 @@ function showScoreChip(scores) {
     miniDimChip('T', scores.technique) + miniDimChip('E', scores.empathy) + miniDimChip('C', scores.clarity) + miniDimChip('A', scores.advancement) +
     '</div></div>';
 }
+
 function miniDimChip(label, val) {
   const color = (val||0) >= 80 ? 'var(--green)' : (val||0) >= 60 ? 'var(--accent-mid)' : (val||0) >= 40 ? 'var(--amber)' : '#94a3b8';
   return '<div style="text-align:center;"><div style="font-size:10px;font-weight:700;color:' + color + ';font-family:var(--mono);">' + (val||'—') + '</div><div style="font-size:9px;color:rgba(255,255,255,0.4);">' + label + '</div></div>';
 }
+
 // ===== TIMER =====
 function startCallTimer() {
   window._callSeconds = 0;
@@ -1178,9 +1493,11 @@ function startCallTimer() {
     document.getElementById('call-duration').textContent = m + ':' + String(s).padStart(2,'0');
   }, 1000);
 }
+
 function stopCallTimer() {
   if (window._callTimer) clearInterval(window._callTimer);
 }
+
 // ===== SAVE + RESULTS =====
 async function saveAndShowResults() {
   const session = window._session;
@@ -1188,6 +1505,8 @@ async function saveAndShowResults() {
   const overall = Math.round((avgs.technique + avgs.empathy + avgs.clarity + avgs.advancement) / 4) || 0;
   const highlight = session.exchanges.length ? (session.exchanges[session.exchanges.length - 1].highlight || '—') : '—';
   const improvement = session.exchanges.length ? (session.exchanges[session.exchanges.length - 1].improvement || '—') : '—';
+
+  // Save to Supabase via STR-004
   try {
     await fetch(N8N_BASE + '/save-session', {
       method: 'POST',
@@ -1212,6 +1531,8 @@ async function saveAndShowResults() {
       })
     });
   } catch(e) { console.error('Save session error:', e); }
+
+  // Populate results view
   const grade = getGrade(overall);
   const gradeEl = document.getElementById('result-grade-circle');
   gradeEl.textContent = grade;
@@ -1228,6 +1549,8 @@ async function saveAndShowResults() {
   setWidth('r-adv-bar', avgs.advancement);
   document.getElementById('r-highlight').textContent = highlight;
   document.getElementById('r-improvement').textContent = improvement;
+
+  // Exchange breakdown
   const exEl = document.getElementById('r-exchanges');
   exEl.innerHTML = session.exchanges.map(ex => {
     const sc = ex.scores;
@@ -1240,13 +1563,16 @@ async function saveAndShowResults() {
       '</div>' +
       '<div class="exch-feedback">' + esc(ex.feedback || '') + '</div></div>';
   }).join('') || '<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">No exchanges scored</div><div class="empty-sub">Call was too short or scoring failed</div></div>';
+
   setMode('results');
 }
+
 function dimPill(label, val) {
   const labels = {T:'Technique',E:'Empathy',C:'Clarity',A:'Advancement'};
   const color = (val||0)>=80?'var(--green)':(val||0)>=60?'var(--accent)':(val||0)>=40?'var(--amber)':'var(--text-dim)';
   return '<span style="padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;background:var(--surface);color:' + color + ';" title="' + labels[label] + '">' + label + ': ' + (val||'—') + '</span>';
 }
+
 // ===== DASHBOARD =====
 async function loadDashboard() {
   const uid = window._currentUser?.id;
@@ -1259,8 +1585,10 @@ async function loadDashboard() {
     safeSet('d-avg-score', avgScore || '—');
     const best = all.reduce((b,r) => Math.max(b, r.overall_score||0), 0);
     safeSet('d-best-score', best || '—');
+    // Streak (simplified: days with sessions in last 7)
     const daysWithSession = new Set(all.slice(0,30).map(r => r.created_at?.split('T')[0]));
     safeSet('d-streak', daysWithSession.size + 'd');
+    // Dim averages
     if (recent10.length) {
       const t = avg(recent10, 'technique_avg');
       const e = avg(recent10, 'empathy_avg');
@@ -1271,6 +1599,7 @@ async function loadDashboard() {
       setWidth('d-clar-bar', c); safeSet('d-clar-val', c);
       setWidth('d-adv-bar', a); safeSet('d-adv-val', a);
     }
+    // Level distribution
     const levelCounts = {};
     all.forEach(r => { levelCounts[r.level] = (levelCounts[r.level]||0)+1; });
     const maxLvl = Math.max(...Object.values(levelCounts), 1);
@@ -1282,6 +1611,7 @@ async function loadDashboard() {
       '<div class="trend-pct" style="color:var(--text-mid);">' + (levelCounts[l]||0) + '</div>' +
       '</div>'
     ).join('');
+    // Recent sessions
     document.getElementById('d-recent-sessions').innerHTML = all.slice(0,5).length ?
       all.slice(0,5).map(r => {
         const g = getGrade(r.overall_score||0);
@@ -1290,9 +1620,11 @@ async function loadDashboard() {
           '<div class="leader-meta">' + (r.exchange_count||0) + ' exchanges · ' + timeAgo(r.created_at) + '</div></div>' +
           '<div class="leader-score ' + g.toLowerCase() + '-grade">' + (r.overall_score||'—') + '</div></div>';
       }).join('') : '<div class="history-empty">No sessions yet</div>';
+    // Leaderboard
     loadLeaderboard();
   } catch(e) { console.error('Dashboard error:', e); }
 }
+
 async function loadLeaderboard() {
   try {
     const rows = await sbAdmin('GET', 'sessions?select=user_name,overall_score,level&order=overall_score.desc&limit=50');
@@ -1300,6 +1632,7 @@ async function loadLeaderboard() {
       document.getElementById('d-leaderboard').innerHTML = '<div class="history-empty">No sessions yet</div>';
       return;
     }
+    // Top score per user
     const byUser = {};
     rows.forEach(r => {
       if (!byUser[r.user_name] || r.overall_score > byUser[r.user_name].score) {
@@ -1316,6 +1649,7 @@ async function loadLeaderboard() {
     }).join('');
   } catch(e) {}
 }
+
 // ===== HISTORY =====
 async function loadHistory() {
   const el = document.getElementById('history-content');
@@ -1327,6 +1661,10 @@ async function loadHistory() {
       el.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">No sessions yet</div><div class="empty-sub">Complete your first session in the Arena to see history here</div></div>';
       return;
     }
+    function dimBar(val, color) {
+      const w = Math.min(val||0, 100);
+      return '<td style="padding:10px 6px;"><div style="display:flex;align-items:center;gap:6px;"><div style="width:40px;height:6px;background:var(--surface2);border-radius:3px;overflow:hidden;"><div style="width:'+w+'%;height:100%;background:'+color+';border-radius:3px;"></div></div><span style="font-size:10px;font-family:var(--mono);color:var(--text-dim);">'+(val||'—')+'</span></div></td>';
+    }
     el.innerHTML = '<table class="sess-table"><thead><tr><th>Date</th><th>Level</th><th>Vertical</th><th>Score</th><th>Grade</th><th>Exchanges</th><th>Technique</th><th>Empathy</th><th>Clarity</th><th>Advancement</th></tr></thead><tbody>' +
       rows.map(r => {
         const g = getGrade(r.overall_score||0);
@@ -1337,16 +1675,17 @@ async function loadHistory() {
           '<td style="font-weight:800;font-family:var(--mono);color:' + gradeColor(g) + ';">' + (r.overall_score||'—') + '</td>' +
           '<td><span class="badge" style="background:' + gradeColor(g) + ';color:#fff;">' + g + '</span></td>' +
           '<td style="font-family:var(--mono);text-align:center;">' + (r.exchange_count||0) + '</td>' +
-          '<td style="font-family:var(--mono);text-align:center;">' + (r.technique_avg||'—') + '</td>' +
-          '<td style="font-family:var(--mono);text-align:center;">' + (r.empathy_avg||'—') + '</td>' +
-          '<td style="font-family:var(--mono);text-align:center;">' + (r.clarity_avg||'—') + '</td>' +
-          '<td style="font-family:var(--mono);text-align:center;">' + (r.advancement_avg||'—') + '</td>' +
+          dimBar(r.technique_avg, '#4A8FD6') +
+          dimBar(r.empathy_avg, '#10b981') +
+          dimBar(r.clarity_avg, '#8b5cf6') +
+          dimBar(r.advancement_avg, '#f59e0b') +
           '</tr>';
       }).join('') + '</tbody></table>';
   } catch(e) {
     el.innerHTML = '<div style="color:var(--red);padding:20px;">Error loading history</div>';
   }
 }
+
 // ===== VAULT =====
 const VAULT_DATA = [
   { objection: "We already use ChatGPT / we're doing AI ourselves", technique: "Acknowledge + Differentiate", response: "That's great — ChatGPT is powerful, and it's a sign your team thinks about innovation. What ManageAI builds is different: it's not ChatGPT access, it's a full workflow automation system custom-built for your specific operation. We connect your tools, your data, and your processes. Most of our clients using ChatGPT still saw a 2–3× productivity lift because we automated the 80% of tasks ChatGPT doesn't touch.", tip: "Never dismiss ChatGPT. Position ManageAI as the layer above it." },
@@ -1358,9 +1697,10 @@ const VAULT_DATA = [
   { objection: "We need to talk to leadership / I need to get buy-in", technique: "Qualification + Stakeholder Map", response: "Of course — this kind of change needs the right people aligned. Can I ask: when you think about who would ultimately greenlight this, is it a budget decision, a technical approval, or a strategic one? The reason I ask is I'd love to help you bring the right materials to that conversation. Would it help if I prepared a one-page ROI summary you could walk them through?", tip: "Help them sell internally. Give them the ammo they need." },
   { objection: "This seems complicated / we don't have time to implement this", technique: "Simplicity Story", response: "That's one of the most common concerns I hear, and it's exactly why we designed the process the way we did. A typical ManageAI implementation is live in 2–4 weeks, and we do 95% of the build work. Your team's involvement is usually 2–3 short calls. We don't ask you to learn new software — we wire into what you already use. Can I walk you through how it worked for a similar company in your space?", tip: "Time objections are really fear objections. Tell a specific client story." }
 ];
+
 function renderVault() {
   const grid = document.getElementById('vault-grid');
-  if (grid.innerHTML.trim()) return;
+  if (grid.innerHTML.trim()) return; // already rendered
   grid.innerHTML = VAULT_DATA.map((item, i) =>
     '<div class="vault-card" id="vault-' + i + '" onclick="toggleVault(' + i + ')">' +
       '<div class="vault-objection">"' + item.objection + '"</div>' +
@@ -1374,12 +1714,14 @@ function renderVault() {
     '</div>'
   ).join('');
 }
+
 function toggleVault(i) {
   const card = document.getElementById('vault-' + i);
   const isOpen = card.classList.contains('open');
   card.classList.toggle('open', !isOpen);
   card.querySelector('.vault-toggle').textContent = isOpen ? '▸ Show ideal response' : '▾ Hide response';
 }
+
 // ===== UTILITIES =====
 function getGrade(score) {
   if (score >= 90) return 'S';
@@ -1406,6 +1748,178 @@ function timeAgo(dt) {
 function formatTime(s) {
   const m=Math.floor(s/60); return m+'m '+String(s%60).padStart(2,'0')+'s';
 }
+
+// ===== COACHING PLAN =====
+let _scenarioLevel = 3;
+let _customPersona = null;
+function setScenarioLevel(n) {
+  _scenarioLevel = n;
+  document.querySelectorAll('.sc-level-btn').forEach(b => {
+    b.style.background = parseInt(b.dataset.level) === n ? 'var(--nav)' : 'var(--surface)';
+    b.style.color = parseInt(b.dataset.level) === n ? '#fff' : 'var(--text)';
+  });
+}
+async function loadCoachingPlan(userId) {
+  const cached = localStorage.getItem('coaching_' + userId);
+  if (cached) {
+    try { renderCoachingPlan(JSON.parse(cached)); return; } catch(e) {}
+  }
+  try {
+    const r = await fetch(N8N_BASE + '/generate-coaching', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ userId })
+    });
+    const data = await r.json();
+    if (data.plan) {
+      localStorage.setItem('coaching_' + userId, JSON.stringify(data));
+      renderCoachingPlan(data);
+    } else { document.getElementById('coaching-card').style.display = 'none'; }
+  } catch(e) { document.getElementById('coaching-card').style.display = 'none'; }
+}
+function renderCoachingPlan(data) {
+  const plan = data.plan || data;
+  document.getElementById('coaching-loading').style.display = 'none';
+  document.getElementById('coaching-content').style.display = 'block';
+  document.getElementById('coaching-strength').textContent = plan.top_strength || '';
+  document.getElementById('coaching-weakness').textContent = plan.top_weakness || '';
+  document.getElementById('coaching-recommended').textContent = 'Try Level ' + (plan.recommended_level||1) + ' \u00b7 ' + (plan.recommended_vertical||'construction').replace('_',' ');
+  const pts = document.getElementById('coaching-points');
+  pts.innerHTML = (plan.coaching_points||[]).map((p,i) =>
+    '<div style="display:flex;gap:8px;align-items:flex-start;"><span style="background:var(--nav);color:#fff;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;">'+(i+1)+'</span><span style="font-size:13px;">'+p+'</span></div>'
+  ).join('');
+  if (plan.recommended_level) {
+    document.getElementById('coaching-cta').dataset.level = plan.recommended_level;
+    document.getElementById('coaching-cta').dataset.vertical = plan.recommended_vertical || 'construction';
+  }
+}
+function startRecommendedSession() {
+  const btn = document.getElementById('coaching-cta');
+  setMode('configure');
+  setTimeout(() => {
+    const level = parseInt(btn.dataset.level || 1);
+    document.querySelectorAll('.level-card').forEach(b => b.classList.toggle('active', parseInt(b.dataset?.level || b.querySelector('.level-num')?.textContent) === level));
+    window._session.level = level;
+    const v = btn.dataset.vertical || 'general_smb';
+    document.querySelectorAll('#vertical-chips .chip').forEach(b => b.classList.toggle('active', b.dataset.v === v));
+    window._session.vertical = v;
+  }, 100);
+}
+async function loadLearningFeed() {
+  try {
+    const r = await fetch(SB_URL + '/rest/v1/learning_feed?visible=eq.true&order=created_at.desc&limit=10&select=*', {
+      headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY }
+    });
+    const items = await r.json();
+    const el = document.getElementById('learning-feed-container');
+    if (!items.length) {
+      el.innerHTML = '<div style="color:var(--text-dim);font-size:13px;text-align:center;padding:24px;background:var(--surface);border-radius:10px;">No team highlights yet \u2014 complete a session to get started</div>';
+      return;
+    }
+    const dimColors = { technique:'#4A8FD6', empathy:'#10b981', clarity:'#8b5cf6', advancement:'#f59e0b' };
+    el.innerHTML = items.map(item =>
+      '<div class="card" style="margin-bottom:10px;padding:14px 16px;">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">' +
+      '<div style="font-weight:700;font-size:13px;">' + (item.user_name||'Team') + ' \u00b7 ' + (item.headline||'') + '</div>' +
+      (item.dimension ? '<span style="font-size:10px;font-weight:700;padding:3px 8px;border-radius:12px;background:' + (dimColors[item.dimension]||'#ccc') + '20;color:' + (dimColors[item.dimension]||'#666') + ';">' + item.dimension + ' ' + (item.score||'') + '</span>' : '') +
+      '</div>' +
+      '<div style="font-size:12px;color:var(--text-dim);">' + (item.content||'') + '</div>' +
+      '</div>'
+    ).join('');
+  } catch(e) {}
+}
+function toggleCustomScenario() {
+  const on = document.getElementById('custom-scenario-toggle').checked;
+  document.getElementById('custom-scenario-input').style.display = on ? 'block' : 'none';
+  document.getElementById('custom-toggle-slider').style.background = on ? 'var(--accent)' : 'var(--border)';
+}
+async function buildScenario() {
+  const desc = document.getElementById('sc-description').value.trim();
+  if (!desc) { alert('Please describe your prospect.'); return; }
+  document.getElementById('sc-persona-card').style.display = 'none';
+  document.getElementById('sc-loading').style.display = 'block';
+  try {
+    const user = window._currentUser;
+    const r = await fetch(N8N_BASE + '/build-scenario', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        userId: user?.id, userEmail: user?.email,
+        prospectDescription: desc,
+        vertical: document.getElementById('sc-vertical').value,
+        difficultyLevel: _scenarioLevel
+      })
+    });
+    const data = await r.json();
+    _customPersona = data.persona || data;
+    document.getElementById('sc-loading').style.display = 'none';
+    document.getElementById('sc-persona-card').style.display = 'block';
+    const p = _customPersona;
+    document.getElementById('sc-persona-content').innerHTML =
+      '<div style="margin-bottom:12px;"><div style="font-size:18px;font-weight:700;">' + (p.name||'Unknown') + '</div>' +
+      '<div style="font-size:13px;color:var(--text-dim);">' + (p.role||'') + ' \u00b7 ' + (p.company||'') + ' \u00b7 ' + (p.city||'') + ', ' + (p.state||'') + '</div></div>' +
+      '<div style="margin-bottom:10px;font-size:12px;"><strong>Pain Points:</strong> ' + (p.pain_points||[]).join(', ') + '</div>' +
+      '<div style="font-size:12px;"><strong>Key Objections:</strong><ul style="margin:6px 0 0 16px;padding:0;">' + (p.objections||[]).map(o=>'<li style="margin-bottom:4px;">'+o+'</li>').join('') + '</ul></div>';
+  } catch(e) {
+    document.getElementById('sc-loading').style.display = 'none';
+    alert('Error building scenario. Try again.');
+  }
+}
+async function trainAgainstScenario() {
+  if (!_customPersona) return;
+  const sessionId = 'sess_custom_' + Date.now();
+  window._currentSession = { sessionId, persona: _customPersona, level: _scenarioLevel, vertical: _customPersona.vertical || document.getElementById('sc-vertical').value };
+  setMode('arena');
+  setTimeout(() => renderPersonaCard(_customPersona), 100);
+}
+function renderPersonaCard(p) {
+  if (!p) return;
+  const initials = (p.name || '??').split(' ').map(w => w[0]).join('').substring(0,2).toUpperCase();
+  document.getElementById('prospect-avatar').textContent = initials;
+  document.getElementById('prospect-name').textContent = p.name || 'Unknown';
+  document.getElementById('prospect-role').textContent = (p.role || '') + (p.company ? ' @ ' + p.company : '');
+  document.getElementById('prospect-company').textContent = p.company || '\u2014';
+  document.getElementById('prospect-city').textContent = p.city || '\u2014';
+}
+async function submitSuggestion(type) {
+  const user = window._currentUser;
+  let payload = { type, submittedBy: user?.email || 'unknown', submittedAt: new Date().toISOString() };
+  if (type === 'objection') {
+    payload.objection = document.getElementById('sug-objection').value.trim();
+    payload.response = document.getElementById('sug-response').value.trim();
+    payload.vertical = document.getElementById('sug-vertical').value;
+    if (!payload.objection) { alert('Please enter the objection.'); return; }
+  } else {
+    payload.idea = document.getElementById('sug-idea').value.trim();
+    payload.category = document.getElementById('sug-category').value;
+    if (!payload.idea) { alert('Please enter your idea.'); return; }
+  }
+  try {
+    await fetch(N8N_BASE + '/submit-suggestion', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+    document.getElementById('sug-toast').style.display = 'block';
+    if (type === 'objection') { document.getElementById('sug-objection').value = ''; document.getElementById('sug-response').value = ''; }
+    else { document.getElementById('sug-idea').value = ''; }
+    setTimeout(() => document.getElementById('sug-toast').style.display = 'none', 4000);
+  } catch(e) { alert('Error submitting. Try again.'); }
+}
+async function submitFeedback() {
+  const user = window._currentUser;
+  const payload = {
+    type: document.getElementById('fb-type').value,
+    subject: document.getElementById('fb-subject').value.trim(),
+    details: document.getElementById('fb-details').value.trim(),
+    severity: document.getElementById('fb-severity').value,
+    submittedBy: user?.email || 'unknown',
+    submittedAt: new Date().toISOString()
+  };
+  if (!payload.subject || !payload.details) { alert('Please fill in subject and details.'); return; }
+  try {
+    await fetch(N8N_BASE + '/submit-feedback', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+    document.getElementById('fb-toast').style.display = 'block';
+    document.getElementById('fb-subject').value = '';
+    document.getElementById('fb-details').value = '';
+    setTimeout(() => document.getElementById('fb-toast').style.display = 'none', 4000);
+  } catch(e) { alert('Error sending. Try again.'); }
+}
+
 // ===== INIT =====
 (function() {
   const token = sessionStorage.getItem('st_token');
@@ -1417,6 +1931,7 @@ function formatTime(s) {
     document.getElementById('app-wrapper').style.display = 'block';
     document.getElementById('user-badge').textContent = window._currentUser.name;
     loadDashboard();
+    loadCoachingPlan(window._currentUser.id);
   }
 })();
 </script>
