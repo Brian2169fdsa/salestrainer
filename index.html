@@ -420,6 +420,7 @@
     @keyframes spin { to{transform:rotate(360deg)} }
     @keyframes bubbleIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
     @keyframes chipIn { from{opacity:0;transform:scale(0.8) translateY(8px)} to{opacity:1;transform:scale(1) translateY(0)} }
+    @keyframes pulse { 0%,100%{opacity:0.4} 50%{opacity:0.7} }
     @keyframes wave1 { 0%,100%{height:6px} 50%{height:20px} }
     @keyframes wave2 { 0%,100%{height:10px} 50%{height:26px} }
     @keyframes wave3 { 0%,100%{height:16px} 50%{height:28px} }
@@ -487,6 +488,7 @@ window._login = async function() {
     document.getElementById('app-wrapper').style.display = 'block';
     document.getElementById('user-badge').textContent = window._currentUser.name;
     if (typeof loadDashboard === 'function') loadDashboard();
+    if (typeof loadCoachingPlan === 'function') loadCoachingPlan(window._currentUser.id);
   } catch(err) {
     errEl.textContent = err.message; errEl.style.display = 'block';
     btn.disabled = false; btn.textContent = 'Sign In';
@@ -528,6 +530,9 @@ window._login = async function() {
     <button class="mode-tab" onclick="setMode('results')" id="tab-results">📋 Results</button>
     <button class="mode-tab" onclick="setMode('vault')" id="tab-vault">🗄️ Objection Vault</button>
     <button class="mode-tab" onclick="setMode('history')" id="tab-history">📁 History</button>
+    <button class="mode-tab" onclick="setMode('suggestions')" id="tab-suggestions">💡 Suggestions</button>
+    <button class="mode-tab" onclick="setMode('feedback')" id="tab-feedback">🐛 Feedback</button>
+    <button class="mode-tab" onclick="setMode('scenario')" id="tab-scenario">🎯 Scenario Builder</button>
   </div>
 
   <!-- ==================== DASHBOARD ==================== -->
@@ -553,6 +558,37 @@ window._login = async function() {
         <div class="dash-kpi-label">Current Streak</div>
         <div class="dash-kpi-value" id="d-streak">—</div>
         <div class="dash-kpi-sub">Days training</div>
+      </div>
+    </div>
+
+    <div id="coaching-card" style="margin-bottom:24px;">
+      <div id="coaching-loading" class="card" style="padding:20px;display:flex;align-items:center;gap:12px;">
+        <div style="width:40px;height:40px;border-radius:50%;background:var(--surface2);animation:pulse 1.5s infinite;flex-shrink:0;"></div>
+        <div style="flex:1;">
+          <div style="height:12px;background:var(--surface2);border-radius:4px;margin-bottom:8px;animation:pulse 1.5s infinite;"></div>
+          <div style="height:10px;background:var(--surface2);border-radius:4px;width:60%;animation:pulse 1.5s infinite;"></div>
+        </div>
+      </div>
+      <div id="coaching-content" style="display:none;" class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+          <div style="font-weight:700;font-size:14px;">🎯 Your Coaching Plan</div>
+          <div id="coaching-recommended" style="font-size:11px;background:var(--nav);color:#fff;padding:4px 10px;border-radius:20px;font-weight:600;"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+          <div style="background:#d1fae5;border-radius:8px;padding:12px;">
+            <div style="font-size:10px;font-weight:700;color:#065f46;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;">💪 Strength</div>
+            <div id="coaching-strength" style="font-size:13px;color:#065f46;font-weight:500;"></div>
+          </div>
+          <div style="background:#fee2e2;border-radius:8px;padding:12px;">
+            <div style="font-size:10px;font-weight:700;color:#991b1b;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;">🎯 Focus Area</div>
+            <div id="coaching-weakness" style="font-size:13px;color:#991b1b;font-weight:500;"></div>
+          </div>
+        </div>
+        <div style="margin-bottom:16px;">
+          <div style="font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">This Week's Reps</div>
+          <div id="coaching-points" style="display:flex;flex-direction:column;gap:6px;"></div>
+        </div>
+        <button id="coaching-cta" class="btn-primary" style="width:100%;padding:11px;font-size:13px;" onclick="startRecommendedSession()">▶ Start Recommended Session</button>
       </div>
     </div>
 
@@ -598,6 +634,13 @@ window._login = async function() {
         </div>
         <div id="d-leaderboard">
           <div class="loading-row"><div class="spinner-ring"></div> Loading…</div>
+        </div>
+
+        <div style="margin-top:24px;">
+          <div style="font-weight:700;font-size:14px;margin-bottom:12px;">⚡ Team Learning Feed</div>
+          <div id="learning-feed-container">
+            <div style="color:var(--text-dim);font-size:13px;text-align:center;padding:24px;">Loading team highlights...</div>
+          </div>
         </div>
 
         <div style="margin-top:24px;">
@@ -675,6 +718,20 @@ window._login = async function() {
         <button class="chip" data-v="automotive" onclick="selectVertical(this)">🚗 Automotive</button>
         <button class="chip" data-v="behavioral_health" onclick="selectVertical(this)">🧠 Behavioral Health</button>
         <button class="chip" data-v="general_smb" onclick="selectVertical(this)">💼 General SMB</button>
+      </div>
+
+      <div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--border);">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <label style="position:relative;display:inline-block;width:40px;height:22px;">
+            <input type="checkbox" id="custom-scenario-toggle" onchange="toggleCustomScenario()" style="opacity:0;width:0;height:0;">
+            <span style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:var(--border);border-radius:22px;transition:.3s;" id="custom-toggle-slider"></span>
+          </label>
+          <span style="font-size:13px;font-weight:600;">Use Custom Scenario</span>
+        </div>
+        <div id="custom-scenario-input" style="display:none;">
+          <label style="font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px;">Describe Your Prospect</label>
+          <textarea id="custom-prospect-desc" rows="3" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;resize:vertical;background:var(--surface);color:var(--text);" placeholder="e.g. CFO at a 50-person construction company in Phoenix, skeptical of technology, had a bad experience with a previous software vendor..."></textarea>
+        </div>
       </div>
 
       <!-- Friday context card -->
@@ -878,11 +935,144 @@ window._login = async function() {
     </div>
   </div>
 
+  <!-- ==================== SUGGESTIONS ==================== -->
+  <div id="mode-suggestions" class="mode-content hidden">
+    <h2 style="font-size:18px;font-weight:700;margin-bottom:6px;">💡 Suggestions</h2>
+    <p style="color:var(--text-dim);font-size:13px;margin-bottom:24px;">Submit objections you've heard in the field or ideas to improve the AI trainer.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+      <div class="card">
+        <div style="font-weight:700;font-size:14px;margin-bottom:16px;">➕ Add a Real Objection</div>
+        <div style="margin-bottom:12px;">
+          <label style="font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px;">Objection You Heard</label>
+          <textarea id="sug-objection" rows="3" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;resize:vertical;background:var(--surface);color:var(--text);" placeholder="e.g. We tried automation with another vendor and it was a disaster..."></textarea>
+        </div>
+        <div style="margin-bottom:12px;">
+          <label style="font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px;">How You Handled It</label>
+          <textarea id="sug-response" rows="3" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;resize:vertical;background:var(--surface);color:var(--text);" placeholder="What did you say? What worked?"></textarea>
+        </div>
+        <div style="margin-bottom:16px;">
+          <label style="font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px;">Vertical</label>
+          <select id="sug-vertical" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;background:var(--surface);color:var(--text);">
+            <option value="general_smb">General SMB</option>
+            <option value="construction">Construction</option>
+            <option value="medical_transport">Medical Transport</option>
+            <option value="automotive">Automotive</option>
+            <option value="behavioral_health">Behavioral Health</option>
+          </select>
+        </div>
+        <button class="btn-primary" onclick="submitSuggestion('objection')" style="width:100%;padding:12px;">Submit Objection</button>
+      </div>
+      <div class="card">
+        <div style="font-weight:700;font-size:14px;margin-bottom:16px;">🤖 Improve the AI</div>
+        <div style="margin-bottom:12px;">
+          <label style="font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px;">Your Suggestion</label>
+          <textarea id="sug-idea" rows="5" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;resize:vertical;background:var(--surface);color:var(--text);" placeholder="e.g. The prospect at Level 3 gives up too easily..."></textarea>
+        </div>
+        <div style="margin-bottom:16px;">
+          <label style="font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px;">Category</label>
+          <select id="sug-category" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;background:var(--surface);color:var(--text);">
+            <option value="persona_behavior">Persona Behavior</option>
+            <option value="scoring">Scoring & Feedback</option>
+            <option value="objections">Objection Vault</option>
+            <option value="ui_ux">UI / UX</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <button class="btn-primary" onclick="submitSuggestion('idea')" style="width:100%;padding:12px;">Submit Idea</button>
+      </div>
+    </div>
+    <div id="sug-toast" style="display:none;margin-top:16px;padding:12px 16px;background:#d1fae5;border:1px solid #6ee7b7;border-radius:8px;color:#065f46;font-size:13px;font-weight:600;">✅ Submitted! Thanks — Brian will review it.</div>
+  </div>
+
+  <!-- ==================== FEEDBACK ==================== -->
+  <div id="mode-feedback" class="mode-content hidden">
+    <h2 style="font-size:18px;font-weight:700;margin-bottom:6px;">🐛 System Feedback</h2>
+    <p style="color:var(--text-dim);font-size:13px;margin-bottom:24px;">Report a bug or tell us how the system is performing. Goes directly to Brian.</p>
+    <div class="card" style="max-width:600px;">
+      <div style="margin-bottom:12px;">
+        <label style="font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px;">Type</label>
+        <select id="fb-type" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;background:var(--surface);color:var(--text);">
+          <option value="bug">🐛 Bug Report</option>
+          <option value="performance">⚡ Performance Issue</option>
+          <option value="ai_quality">🤖 AI Quality Issue</option>
+          <option value="general">💬 General Feedback</option>
+        </select>
+      </div>
+      <div style="margin-bottom:12px;">
+        <label style="font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px;">Subject</label>
+        <input id="fb-subject" type="text" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;background:var(--surface);color:var(--text);" placeholder="Short description of the issue" />
+      </div>
+      <div style="margin-bottom:12px;">
+        <label style="font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px;">Details</label>
+        <textarea id="fb-details" rows="5" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;resize:vertical;background:var(--surface);color:var(--text);" placeholder="What happened? What did you expect? Steps to reproduce..."></textarea>
+      </div>
+      <div style="margin-bottom:16px;">
+        <label style="font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px;">Severity</label>
+        <select id="fb-severity" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;background:var(--surface);color:var(--text);">
+          <option value="low">Low — Minor annoyance</option>
+          <option value="medium">Medium — Affects usability</option>
+          <option value="high">High — Blocking use</option>
+          <option value="critical">Critical — System broken</option>
+        </select>
+      </div>
+      <button class="btn-primary" onclick="submitFeedback()" style="width:100%;padding:13px;font-size:14px;">Send to Brian</button>
+    </div>
+    <div id="fb-toast" style="display:none;margin-top:16px;padding:12px 16px;background:#d1fae5;border:1px solid #6ee7b7;border-radius:8px;color:#065f46;font-size:13px;font-weight:600;max-width:600px;">✅ Sent! Brian will be notified at brian@manageai.io.</div>
+  </div>
+
+  <!-- ==================== SCENARIO BUILDER ==================== -->
+  <div id="mode-scenario" class="mode-content hidden">
+    <h2 style="font-size:18px;font-weight:700;margin-bottom:6px;">🎯 Scenario Builder</h2>
+    <p style="color:var(--text-dim);font-size:13px;margin-bottom:24px;">Describe a real prospect you're working or a type of company you want to practice on. The AI generates a hyper-realistic persona.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+      <div class="card">
+        <div style="font-weight:700;font-size:14px;margin-bottom:16px;">Describe Your Prospect</div>
+        <div style="margin-bottom:12px;">
+          <label style="font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px;">Prospect Description</label>
+          <textarea id="sc-description" rows="5" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;resize:vertical;background:var(--surface);color:var(--text);" placeholder="e.g. CFO at a 200-person behavioral health org in Tucson. Just got burned by a Zapier consultant. CEO wants to modernize but CFO is skeptical of AI spend..."></textarea>
+        </div>
+        <div style="margin-bottom:12px;">
+          <label style="font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px;">Vertical</label>
+          <select id="sc-vertical" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;background:var(--surface);color:var(--text);">
+            <option value="general_smb">General SMB</option>
+            <option value="construction">Construction</option>
+            <option value="medical_transport">Medical Transport</option>
+            <option value="automotive">Automotive</option>
+            <option value="behavioral_health">Behavioral Health</option>
+          </select>
+        </div>
+        <div style="margin-bottom:16px;">
+          <label style="font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:5px;">Difficulty Level</label>
+          <div style="display:flex;gap:8px;">
+            <button class="sc-level-btn" data-level="1" onclick="setScenarioLevel(1)" style="flex:1;padding:8px;border:1px solid var(--border);border-radius:6px;background:var(--surface);font-size:12px;font-weight:600;cursor:pointer;">1</button>
+            <button class="sc-level-btn" data-level="2" onclick="setScenarioLevel(2)" style="flex:1;padding:8px;border:1px solid var(--border);border-radius:6px;background:var(--surface);font-size:12px;font-weight:600;cursor:pointer;">2</button>
+            <button class="sc-level-btn" data-level="3" onclick="setScenarioLevel(3)" style="flex:1;padding:8px;border:1px solid var(--border);border-radius:6px;background:var(--nav);color:#fff;font-size:12px;font-weight:600;cursor:pointer;">3</button>
+            <button class="sc-level-btn" data-level="4" onclick="setScenarioLevel(4)" style="flex:1;padding:8px;border:1px solid var(--border);border-radius:6px;background:var(--surface);font-size:12px;font-weight:600;cursor:pointer;">4</button>
+            <button class="sc-level-btn" data-level="5" onclick="setScenarioLevel(5)" style="flex:1;padding:8px;border:1px solid var(--border);border-radius:6px;background:var(--surface);font-size:12px;font-weight:600;cursor:pointer;">5</button>
+          </div>
+        </div>
+        <button class="btn-primary" onclick="buildScenario()" style="width:100%;padding:13px;font-size:14px;">⚡ Generate Persona</button>
+      </div>
+      <div class="card" id="sc-persona-card" style="display:none;">
+        <div style="font-weight:700;font-size:14px;margin-bottom:16px;">Generated Persona</div>
+        <div id="sc-persona-content"></div>
+        <button class="btn-primary" onclick="trainAgainstScenario()" style="width:100%;padding:13px;font-size:14px;margin-top:16px;">🎯 Train Against This Prospect</button>
+      </div>
+      <div id="sc-loading" style="display:none;" class="card">
+        <div style="text-align:center;padding:40px 20px;color:var(--text-dim);">
+          <div style="font-size:32px;margin-bottom:12px;">🤖</div>
+          <div style="font-weight:600;">Building your prospect...</div>
+          <div style="font-size:12px;margin-top:6px;">Claude is generating a hyper-realistic persona</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Footer -->
   <div class="footer">
     <div style="display:flex;align-items:center;gap:6px;">
       <div class="footer-brand"><span class="m">MANAGE</span><span class="ai">AI</span></div>
-      <span class="footer-meta"> · AI Sales Trainer v1.0 · 2026</span>
+      <span class="footer-meta"> · AI Sales Trainer v1.5 · 2026</span>
     </div>
     <div class="footer-conf">CONFIDENTIAL — INTERNAL USE ONLY</div>
   </div>
@@ -914,13 +1104,17 @@ window._scoringInProgress = false;
 
 // ===== MODE =====
 function setMode(mode) {
-  ['dashboard','configure','arena','results','vault','history'].forEach(m => {
+  ['dashboard','configure','arena','results','vault','history','suggestions','feedback','scenario'].forEach(m => {
     const el = document.getElementById('mode-' + m);
     if (el) el.classList.toggle('hidden', m !== mode);
     const tab = document.getElementById('tab-' + m);
     if (tab) tab.classList.toggle('active', m === mode);
   });
-  if (mode === 'dashboard') loadDashboard();
+  if (mode === 'dashboard') {
+    loadDashboard();
+    loadLearningFeed();
+    if (window._currentUser) loadCoachingPlan(window._currentUser.id);
+  }
   if (mode === 'history') loadHistory();
   if (mode === 'vault') renderVault();
 }
@@ -1467,6 +1661,10 @@ async function loadHistory() {
       el.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">No sessions yet</div><div class="empty-sub">Complete your first session in the Arena to see history here</div></div>';
       return;
     }
+    function dimBar(val, color) {
+      const w = Math.min(val||0, 100);
+      return '<td style="padding:10px 6px;"><div style="display:flex;align-items:center;gap:6px;"><div style="width:40px;height:6px;background:var(--surface2);border-radius:3px;overflow:hidden;"><div style="width:'+w+'%;height:100%;background:'+color+';border-radius:3px;"></div></div><span style="font-size:10px;font-family:var(--mono);color:var(--text-dim);">'+(val||'—')+'</span></div></td>';
+    }
     el.innerHTML = '<table class="sess-table"><thead><tr><th>Date</th><th>Level</th><th>Vertical</th><th>Score</th><th>Grade</th><th>Exchanges</th><th>Technique</th><th>Empathy</th><th>Clarity</th><th>Advancement</th></tr></thead><tbody>' +
       rows.map(r => {
         const g = getGrade(r.overall_score||0);
@@ -1477,10 +1675,10 @@ async function loadHistory() {
           '<td style="font-weight:800;font-family:var(--mono);color:' + gradeColor(g) + ';">' + (r.overall_score||'—') + '</td>' +
           '<td><span class="badge" style="background:' + gradeColor(g) + ';color:#fff;">' + g + '</span></td>' +
           '<td style="font-family:var(--mono);text-align:center;">' + (r.exchange_count||0) + '</td>' +
-          '<td style="font-family:var(--mono);text-align:center;">' + (r.technique_avg||'—') + '</td>' +
-          '<td style="font-family:var(--mono);text-align:center;">' + (r.empathy_avg||'—') + '</td>' +
-          '<td style="font-family:var(--mono);text-align:center;">' + (r.clarity_avg||'—') + '</td>' +
-          '<td style="font-family:var(--mono);text-align:center;">' + (r.advancement_avg||'—') + '</td>' +
+          dimBar(r.technique_avg, '#4A8FD6') +
+          dimBar(r.empathy_avg, '#10b981') +
+          dimBar(r.clarity_avg, '#8b5cf6') +
+          dimBar(r.advancement_avg, '#f59e0b') +
           '</tr>';
       }).join('') + '</tbody></table>';
   } catch(e) {
@@ -1551,6 +1749,177 @@ function formatTime(s) {
   const m=Math.floor(s/60); return m+'m '+String(s%60).padStart(2,'0')+'s';
 }
 
+// ===== COACHING PLAN =====
+let _scenarioLevel = 3;
+let _customPersona = null;
+function setScenarioLevel(n) {
+  _scenarioLevel = n;
+  document.querySelectorAll('.sc-level-btn').forEach(b => {
+    b.style.background = parseInt(b.dataset.level) === n ? 'var(--nav)' : 'var(--surface)';
+    b.style.color = parseInt(b.dataset.level) === n ? '#fff' : 'var(--text)';
+  });
+}
+async function loadCoachingPlan(userId) {
+  const cached = localStorage.getItem('coaching_' + userId);
+  if (cached) {
+    try { renderCoachingPlan(JSON.parse(cached)); return; } catch(e) {}
+  }
+  try {
+    const r = await fetch(N8N_BASE + '/generate-coaching', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ userId })
+    });
+    const data = await r.json();
+    if (data.plan) {
+      localStorage.setItem('coaching_' + userId, JSON.stringify(data));
+      renderCoachingPlan(data);
+    } else { document.getElementById('coaching-card').style.display = 'none'; }
+  } catch(e) { document.getElementById('coaching-card').style.display = 'none'; }
+}
+function renderCoachingPlan(data) {
+  const plan = data.plan || data;
+  document.getElementById('coaching-loading').style.display = 'none';
+  document.getElementById('coaching-content').style.display = 'block';
+  document.getElementById('coaching-strength').textContent = plan.top_strength || '';
+  document.getElementById('coaching-weakness').textContent = plan.top_weakness || '';
+  document.getElementById('coaching-recommended').textContent = 'Try Level ' + (plan.recommended_level||1) + ' \u00b7 ' + (plan.recommended_vertical||'construction').replace('_',' ');
+  const pts = document.getElementById('coaching-points');
+  pts.innerHTML = (plan.coaching_points||[]).map((p,i) =>
+    '<div style="display:flex;gap:8px;align-items:flex-start;"><span style="background:var(--nav);color:#fff;border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;">'+(i+1)+'</span><span style="font-size:13px;">'+p+'</span></div>'
+  ).join('');
+  if (plan.recommended_level) {
+    document.getElementById('coaching-cta').dataset.level = plan.recommended_level;
+    document.getElementById('coaching-cta').dataset.vertical = plan.recommended_vertical || 'construction';
+  }
+}
+function startRecommendedSession() {
+  const btn = document.getElementById('coaching-cta');
+  setMode('configure');
+  setTimeout(() => {
+    const level = parseInt(btn.dataset.level || 1);
+    document.querySelectorAll('.level-card').forEach(b => b.classList.toggle('active', parseInt(b.dataset?.level || b.querySelector('.level-num')?.textContent) === level));
+    window._session.level = level;
+    const v = btn.dataset.vertical || 'general_smb';
+    document.querySelectorAll('#vertical-chips .chip').forEach(b => b.classList.toggle('active', b.dataset.v === v));
+    window._session.vertical = v;
+  }, 100);
+}
+async function loadLearningFeed() {
+  try {
+    const r = await fetch(SB_URL + '/rest/v1/learning_feed?visible=eq.true&order=created_at.desc&limit=10&select=*', {
+      headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY }
+    });
+    const items = await r.json();
+    const el = document.getElementById('learning-feed-container');
+    if (!items.length) {
+      el.innerHTML = '<div style="color:var(--text-dim);font-size:13px;text-align:center;padding:24px;background:var(--surface);border-radius:10px;">No team highlights yet \u2014 complete a session to get started</div>';
+      return;
+    }
+    const dimColors = { technique:'#4A8FD6', empathy:'#10b981', clarity:'#8b5cf6', advancement:'#f59e0b' };
+    el.innerHTML = items.map(item =>
+      '<div class="card" style="margin-bottom:10px;padding:14px 16px;">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">' +
+      '<div style="font-weight:700;font-size:13px;">' + (item.user_name||'Team') + ' \u00b7 ' + (item.headline||'') + '</div>' +
+      (item.dimension ? '<span style="font-size:10px;font-weight:700;padding:3px 8px;border-radius:12px;background:' + (dimColors[item.dimension]||'#ccc') + '20;color:' + (dimColors[item.dimension]||'#666') + ';">' + item.dimension + ' ' + (item.score||'') + '</span>' : '') +
+      '</div>' +
+      '<div style="font-size:12px;color:var(--text-dim);">' + (item.content||'') + '</div>' +
+      '</div>'
+    ).join('');
+  } catch(e) {}
+}
+function toggleCustomScenario() {
+  const on = document.getElementById('custom-scenario-toggle').checked;
+  document.getElementById('custom-scenario-input').style.display = on ? 'block' : 'none';
+  document.getElementById('custom-toggle-slider').style.background = on ? 'var(--accent)' : 'var(--border)';
+}
+async function buildScenario() {
+  const desc = document.getElementById('sc-description').value.trim();
+  if (!desc) { alert('Please describe your prospect.'); return; }
+  document.getElementById('sc-persona-card').style.display = 'none';
+  document.getElementById('sc-loading').style.display = 'block';
+  try {
+    const user = window._currentUser;
+    const r = await fetch(N8N_BASE + '/build-scenario', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        userId: user?.id, userEmail: user?.email,
+        prospectDescription: desc,
+        vertical: document.getElementById('sc-vertical').value,
+        difficultyLevel: _scenarioLevel
+      })
+    });
+    const data = await r.json();
+    _customPersona = data.persona || data;
+    document.getElementById('sc-loading').style.display = 'none';
+    document.getElementById('sc-persona-card').style.display = 'block';
+    const p = _customPersona;
+    document.getElementById('sc-persona-content').innerHTML =
+      '<div style="margin-bottom:12px;"><div style="font-size:18px;font-weight:700;">' + (p.name||'Unknown') + '</div>' +
+      '<div style="font-size:13px;color:var(--text-dim);">' + (p.role||'') + ' \u00b7 ' + (p.company||'') + ' \u00b7 ' + (p.city||'') + ', ' + (p.state||'') + '</div></div>' +
+      '<div style="margin-bottom:10px;font-size:12px;"><strong>Pain Points:</strong> ' + (p.pain_points||[]).join(', ') + '</div>' +
+      '<div style="font-size:12px;"><strong>Key Objections:</strong><ul style="margin:6px 0 0 16px;padding:0;">' + (p.objections||[]).map(o=>'<li style="margin-bottom:4px;">'+o+'</li>').join('') + '</ul></div>';
+  } catch(e) {
+    document.getElementById('sc-loading').style.display = 'none';
+    alert('Error building scenario. Try again.');
+  }
+}
+async function trainAgainstScenario() {
+  if (!_customPersona) return;
+  const sessionId = 'sess_custom_' + Date.now();
+  window._currentSession = { sessionId, persona: _customPersona, level: _scenarioLevel, vertical: _customPersona.vertical || document.getElementById('sc-vertical').value };
+  setMode('arena');
+  setTimeout(() => renderPersonaCard(_customPersona), 100);
+}
+function renderPersonaCard(p) {
+  if (!p) return;
+  const initials = (p.name || '??').split(' ').map(w => w[0]).join('').substring(0,2).toUpperCase();
+  document.getElementById('prospect-avatar').textContent = initials;
+  document.getElementById('prospect-name').textContent = p.name || 'Unknown';
+  document.getElementById('prospect-role').textContent = (p.role || '') + (p.company ? ' @ ' + p.company : '');
+  document.getElementById('prospect-company').textContent = p.company || '\u2014';
+  document.getElementById('prospect-city').textContent = p.city || '\u2014';
+}
+async function submitSuggestion(type) {
+  const user = window._currentUser;
+  let payload = { type, submittedBy: user?.email || 'unknown', submittedAt: new Date().toISOString() };
+  if (type === 'objection') {
+    payload.objection = document.getElementById('sug-objection').value.trim();
+    payload.response = document.getElementById('sug-response').value.trim();
+    payload.vertical = document.getElementById('sug-vertical').value;
+    if (!payload.objection) { alert('Please enter the objection.'); return; }
+  } else {
+    payload.idea = document.getElementById('sug-idea').value.trim();
+    payload.category = document.getElementById('sug-category').value;
+    if (!payload.idea) { alert('Please enter your idea.'); return; }
+  }
+  try {
+    await fetch(N8N_BASE + '/submit-suggestion', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+    document.getElementById('sug-toast').style.display = 'block';
+    if (type === 'objection') { document.getElementById('sug-objection').value = ''; document.getElementById('sug-response').value = ''; }
+    else { document.getElementById('sug-idea').value = ''; }
+    setTimeout(() => document.getElementById('sug-toast').style.display = 'none', 4000);
+  } catch(e) { alert('Error submitting. Try again.'); }
+}
+async function submitFeedback() {
+  const user = window._currentUser;
+  const payload = {
+    type: document.getElementById('fb-type').value,
+    subject: document.getElementById('fb-subject').value.trim(),
+    details: document.getElementById('fb-details').value.trim(),
+    severity: document.getElementById('fb-severity').value,
+    submittedBy: user?.email || 'unknown',
+    submittedAt: new Date().toISOString()
+  };
+  if (!payload.subject || !payload.details) { alert('Please fill in subject and details.'); return; }
+  try {
+    await fetch(N8N_BASE + '/submit-feedback', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+    document.getElementById('fb-toast').style.display = 'block';
+    document.getElementById('fb-subject').value = '';
+    document.getElementById('fb-details').value = '';
+    setTimeout(() => document.getElementById('fb-toast').style.display = 'none', 4000);
+  } catch(e) { alert('Error sending. Try again.'); }
+}
+
 // ===== INIT =====
 (function() {
   const token = sessionStorage.getItem('st_token');
@@ -1562,6 +1931,7 @@ function formatTime(s) {
     document.getElementById('app-wrapper').style.display = 'block';
     document.getElementById('user-badge').textContent = window._currentUser.name;
     loadDashboard();
+    loadCoachingPlan(window._currentUser.id);
   }
 })();
 </script>
