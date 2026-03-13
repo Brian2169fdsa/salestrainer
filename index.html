@@ -1405,51 +1405,58 @@ window._callSeconds = 0;
 window._scoringInProgress = false;
 
 // ═══════════════════════════════════════════
-// iOS AUDIO ENGINE — fixes 3 WebKit bugs
+// iOS AUDIO ENGINE — fixes WebKit audio bugs
 // ═══════════════════════════════════════════
-let _audioCtx = null;
+// SINGLE AudioContext for the entire app. Safari limits to 4 instances;
+// Retell's LiveKit SDK creates its own, so we share ONE for our unlock work.
+window._sharedAudioCtx = null;
 let _silentNode = null;
-let _isSpeaker = true; // default to speaker on iOS
+let _isSpeaker = true;
 
-function getAudioContext() {
-  if (!_audioCtx) {
-    _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+function getSharedAudioCtx() {
+  if (!window._sharedAudioCtx || window._sharedAudioCtx.state === 'closed') {
+    var AC = window.AudioContext || window.webkitAudioContext;
+    if (AC) window._sharedAudioCtx = new AC();
   }
-  return _audioCtx;
+  return window._sharedAudioCtx;
 }
 
-// BUG 1 FIX: iOS suspends AudioContext until user gesture + resume()
-// Call this inside every button tap handler
-async function unlockIOSAudio() {
-  if (!isIOS) return;
-  const ctx = getAudioContext();
-  if (ctx.state === 'suspended') {
-    await ctx.resume();
+// Unlock iOS audio pipeline. MUST be called inside a user-gesture handler.
+// Resumes the AudioContext and plays a silent buffer so iOS considers audio
+// "unlocked" for the lifetime of the page.
+async function unlockAudio() {
+  try {
+    var ctx = getSharedAudioCtx();
+    if (!ctx) return;
+    if (ctx.state === 'suspended' || ctx.state === 'interrupted') {
+      await ctx.resume();
+    }
+    var buf = ctx.createBuffer(1, 1, ctx.sampleRate);
+    var src = ctx.createBufferSource();
+    src.buffer = buf;
+    src.connect(ctx.destination);
+    src.start(0);
+    var banner = document.getElementById('audio-unlock-banner');
+    if (banner) banner.style.display = 'none';
+  } catch(e) {
+    console.warn('unlockAudio failed:', e);
   }
-  // Play a 0-duration silent buffer to fully unlock the audio session
-  const buf = ctx.createBuffer(1, 1, 22050);
-  const src = ctx.createBufferSource();
-  src.buffer = buf;
-  src.connect(ctx.destination);
-  src.start(0);
 }
 
-// BUG 2 FIX: getUserMedia() forces iOS to earpiece mode
-// Play a silent looping audio element to keep audio session on speaker
+// iOS getUserMedia forces earpiece mode. A silent looping <audio> element
+// tells iOS to keep the media/speaker audio route active.
+// IMPORTANT: must be started AFTER Retell's LiveKit acquires the mic,
+// otherwise getUserMedia will reconfigure the audio session and kill it.
 function keepIOSSpeaker() {
   if (!isIOS) return;
-  if (_silentNode) return; // already running
-
-  // Create a silent audio element — this tells iOS to use media (speaker) mode
-  const silentAudio = document.createElement('audio');
+  if (_silentNode) return;
+  var silentAudio = document.createElement('audio');
   silentAudio.setAttribute('playsinline', '');
-  silentAudio.setAttribute('autoplay', '');
   silentAudio.setAttribute('loop', '');
-  // 1-second silent MP3 as base64 data URI (100% safe to embed)
   silentAudio.src = 'data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4LjI5LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAAFAAAESAAzMzMzMzMzMzMzMzMzMzMzMzMzZmZmZmZmZmZmZmZmZmZmZmZmZmaZmZmZmZmZmZmZmZmZmZmZmZmZzMzMzMzMzMzMzMzMzMzMzMzMzM//////////////////////////////////////////////////////////////////8AAAAATGF2YzU4LjU0AAAAAAAAAAAAAAAAJAcAAAAAAAAABEjnFu4AAAAAAAAAAAAAAAAAAP/7kGQAAANUMEoFPeACNQV40KEYABEY41a3lYACIxxqFvaQAAAAGmDgAABZQKAABJRgKCDgfDAwTBsGzA0HwfSmDxP/7kmQQgANwMEoFveACNAV40KEYABNQ41K1lYACIxxqFvaQAAAAHnDgcAB5QKAABJQ==';
-  silentAudio.volume = 0.001; // near-silent but not muted
+  silentAudio.volume = 0.001;
   document.body.appendChild(silentAudio);
-  silentAudio.play().catch(() => {});
+  silentAudio.play().catch(function() {});
   _silentNode = silentAudio;
 }
 
@@ -1461,15 +1468,11 @@ function stopIOSSpeakerLock() {
   }
 }
 
-// BUG 3 FIX: speakerphone toggle
-// iOS does not support setSinkId(), but routing through AudioContext forces speaker
-let _speakerStream = null;
-let _speakerSource = null;
+// Speakerphone toggle (visual only — iOS doesn't support setSinkId)
 async function toggleSpeaker() {
   _isSpeaker = !_isSpeaker;
-  const btn = document.getElementById('btn-speaker');
+  var btn = document.getElementById('btn-speaker');
   if (btn) btn.textContent = _isSpeaker ? '🔊 Speaker' : '🔈 Earpiece';
-  // Visual feedback
   if (btn) btn.style.background = _isSpeaker ? '#059669' : '#6B7280';
 }
 // ═══════════════════════════════════════════
@@ -1646,35 +1649,34 @@ function initArena(persona) {
 
 // ===== RETELL CALL =====
 async function startCall() {
-  await unlockIOSAudio();
-  if (isIOS) keepIOSSpeaker();
-
   if (!window._session.accessToken) {
     alert('No access token — run Configure first');
     return;
   }
+
+  // Unlock iOS audio pipeline during this user gesture (tap).
+  // Must happen BEFORE any async work so the gesture context is preserved.
+  await unlockAudio();
+
   document.getElementById('btn-start-call').style.display = 'none';
   const statusEl = document.getElementById('call-status');
   statusEl.className = 'call-status connecting';
   statusEl.textContent = 'Connecting...';
 
   try {
-    // iOS Safari: unlock AudioContext during this user gesture (tap)
-    await unlockAudio();
-
-    // Explicit mic permission request before starting call (mobile browsers)
-    var testStream;
-    try {
-      testStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    } catch(e) {
-      statusEl.className = 'call-status ended';
-      statusEl.textContent = '✗ Microphone access denied — tap Allow when prompted';
-      document.getElementById('btn-start-call').style.display = 'flex';
-      return;
-    }
-    // Stop the test stream so it doesn't conflict with Retell's own stream
-    if (testStream) {
-      testStream.getTracks().forEach(function(t) { t.stop(); });
+    // Check mic permission via permissions API (non-blocking, no getUserMedia).
+    // We do NOT call getUserMedia here — on iOS, acquiring and then releasing
+    // a mic stream corrupts the audio session for the Retell SDK's own stream.
+    if (navigator.permissions && navigator.permissions.query) {
+      try {
+        var micPerm = await navigator.permissions.query({ name: 'microphone' });
+        if (micPerm.state === 'denied') {
+          statusEl.className = 'call-status ended';
+          statusEl.textContent = '✗ Microphone blocked — check browser settings';
+          document.getElementById('btn-start-call').style.display = 'flex';
+          return;
+        }
+      } catch(e) { /* permissions.query not supported — continue anyway */ }
     }
 
     if (typeof RetellWebClient === 'undefined') {
@@ -1695,24 +1697,29 @@ async function startCall() {
       document.getElementById('speaking-label').textContent = 'Call active';
       window._session.startedAt = new Date().toISOString();
       startCallTimer();
-      // iOS: ensure AudioContext is still running before Retell plays audio
+
+      // iOS: start silent speaker-lock AFTER Retell has acquired the mic.
+      // Doing it before getUserMedia would get killed by the audio session change.
+      if (isIOS) keepIOSSpeaker();
+
+      // Ensure our AudioContext is still running
       var ctx = getSharedAudioCtx();
-      if (ctx && ctx.state === 'suspended') {
+      if (ctx && (ctx.state === 'suspended' || ctx.state === 'interrupted')) {
         try { await ctx.resume(); } catch(e) {}
       }
-      // Tell Retell SDK to start audio playback (required on iOS Safari)
-      try {
-        await window._retellClient.startAudioPlayback();
-      } catch(e) {
-        console.warn('startAudioPlayback failed, retrying in 500ms:', e);
-        // Retry once after a short delay — iOS sometimes needs a moment
-        setTimeout(async function() {
-          try { await window._retellClient.startAudioPlayback(); } catch(e2) {
-            console.error('startAudioPlayback retry failed:', e2);
-          }
-        }, 500);
+
+      // Tell Retell SDK to start audio playback (required on iOS Safari).
+      // Retry with increasing delays — iOS sometimes needs time after mic acquire.
+      for (var attempt = 0; attempt < 3; attempt++) {
+        try {
+          await window._retellClient.startAudioPlayback();
+          break;
+        } catch(e) {
+          console.warn('startAudioPlayback attempt ' + (attempt+1) + ' failed:', e);
+          if (attempt < 2) await new Promise(function(r) { setTimeout(r, 300 * (attempt + 1)); });
+        }
       }
-      // Hide audio unlock banner if visible
+
       var banner = document.getElementById('audio-unlock-banner');
       if (banner) banner.style.display = 'none';
     });
@@ -1750,10 +1757,17 @@ async function startCall() {
 
     window._retellClient.on('error', (err) => {
       console.error('Retell error:', err);
+      if (isIOS) stopIOSSpeakerLock();
+      var msg = err.message || 'Connection failed';
+      // Detect mic permission denial from inside the SDK
+      if (msg.match(/permission|not.allowed|denied|blocked/i)) {
+        msg = 'Microphone access denied — tap Allow when prompted';
+      }
       statusEl.className = 'call-status ended';
-      statusEl.textContent = '✗ Error: ' + (err.message || 'Connection failed');
+      statusEl.textContent = '✗ ' + msg;
       document.getElementById('btn-start-call').style.display = 'flex';
       document.getElementById('btn-end-call').style.display = 'none';
+      document.getElementById('btn-speaker').style.display = 'none';
     });
 
     await window._retellClient.startCall({ accessToken: window._session.accessToken });
@@ -2364,58 +2378,25 @@ function closeMoreDrawer() {
   document.getElementById('more-drawer-overlay').classList.remove('open');
 }
 
-// ===== AUDIO UNLOCK (iOS Safari fix) =====
-// Persistent AudioContext — reused across the session so iOS doesn't re-suspend
-window._sharedAudioCtx = null;
-
-function getSharedAudioCtx() {
-  if (!window._sharedAudioCtx || window._sharedAudioCtx.state === 'closed') {
-    var AC = window.AudioContext || window.webkitAudioContext;
-    if (AC) window._sharedAudioCtx = new AC();
-  }
-  return window._sharedAudioCtx;
-}
-
-// Must be called inside a user-gesture handler (click/tap).
-// Creates context, resumes it, and plays a silent buffer to fully unlock
-// iOS Safari's audio pipeline.
-async function unlockAudio() {
-  try {
-    var ctx = getSharedAudioCtx();
-    if (!ctx) return;
-    if (ctx.state === 'suspended') await ctx.resume();
-    // Play a tiny silent buffer — iOS requires actual audio output during a
-    // user gesture before it considers audio "unlocked".
-    var buf = ctx.createBuffer(1, 1, ctx.sampleRate);
-    var src = ctx.createBufferSource();
-    src.buffer = buf;
-    src.connect(ctx.destination);
-    src.start(0);
-    var banner = document.getElementById('audio-unlock-banner');
-    if (banner) banner.style.display = 'none';
-  } catch(e) {
-    console.warn('unlockAudio failed:', e);
-  }
-}
-
+// ===== AUDIO STATE CHECKS =====
 function checkAudioContext() {
-  var AC = window.AudioContext || window.webkitAudioContext;
-  if (AC) {
-    var ctx = getSharedAudioCtx();
-    if (ctx && (ctx.state === 'suspended' || ctx.state === 'interrupted')) {
-      var banner = document.getElementById('audio-unlock-banner');
-      if (banner) banner.style.display = 'block';
-    }
+  var ctx = getSharedAudioCtx();
+  if (ctx && (ctx.state === 'suspended' || ctx.state === 'interrupted')) {
+    var banner = document.getElementById('audio-unlock-banner');
+    if (banner) banner.style.display = 'block';
   }
 }
 
-// iOS Safari: when user backgrounds the tab or locks the screen, AudioContext
-// transitions to "interrupted". Re-resume it when they come back.
+// Re-resume AudioContext when returning from background/lock screen
 document.addEventListener('visibilitychange', function() {
   if (document.visibilityState === 'visible') {
     var ctx = window._sharedAudioCtx;
     if (ctx && (ctx.state === 'suspended' || ctx.state === 'interrupted')) {
       ctx.resume().catch(function(e) { console.warn('AudioContext re-resume failed:', e); });
+    }
+    // Re-start silent speaker lock if a call is active
+    if (isIOS && window._retellClient && _silentNode) {
+      _silentNode.play().catch(function() {});
     }
   }
 });
