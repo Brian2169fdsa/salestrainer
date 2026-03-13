@@ -1404,21 +1404,8 @@ window._callTimer = null;
 window._callSeconds = 0;
 window._scoringInProgress = false;
 
-// Catch unhandled promise rejections from the Retell SDK.
-// The SDK's setMicrophoneEnabled(true) is fire-and-forget — if getUserMedia
-// fails, the rejection surfaces here. Without this handler it dies silently.
-window.addEventListener('unhandledrejection', function(event) {
-  var reason = event.reason || {};
-  var msg = (typeof reason === 'string') ? reason : (reason.message || '');
-  // Only intercept audio/mic related rejections
-  if (msg.match(/permission|not.allowed|denied|getUserMedia|audio|microphone|media/i)) {
-    console.error('[Audio] Unhandled rejection caught:', msg);
-    var statusEl = document.getElementById('call-status');
-    if (statusEl && statusEl.textContent.indexOf('Live') !== -1) {
-      statusEl.textContent = '● Live (⚠ mic issue — ' + msg.substring(0, 60) + ')';
-    }
-    event.preventDefault();
-  }
+window.addEventListener('unhandledrejection', e => {
+  console.error('[Audio] Unhandled rejection:', e.reason);
 });
 
 // ═══════════════════════════════════════════
@@ -1681,42 +1668,19 @@ async function startCall() {
   statusEl.textContent = 'Connecting...';
 
   try {
-    // Mic permission handling — two strategies:
-    // iOS: use permissions.query (non-blocking) because calling getUserMedia
-    //       and releasing the stream corrupts iOS's audio session for the SDK.
-    // Desktop: actually call getUserMedia to trigger the permission prompt
-    //          during the user gesture, then release the stream immediately.
-    //          This ensures the SDK's later getUserMedia succeeds without a
-    //          prompt (which would fire outside the gesture context).
-    if (isIOS) {
-      if (navigator.permissions && navigator.permissions.query) {
-        try {
-          var micPerm = await navigator.permissions.query({ name: 'microphone' });
-          if (micPerm.state === 'denied') {
-            statusEl.className = 'call-status ended';
-            statusEl.textContent = '✗ Microphone blocked — check browser settings';
-            document.getElementById('btn-start-call').style.display = 'flex';
-            return;
-          }
-        } catch(e) { /* permissions.query not supported — continue anyway */ }
-      }
-    } else {
-      // Desktop: pre-acquire mic to trigger permission prompt in gesture context
+    // Check mic permission via permissions API (non-blocking, no getUserMedia).
+    // We do NOT call getUserMedia here — on iOS, acquiring and then releasing
+    // a mic stream corrupts the audio session for the Retell SDK's own stream.
+    if (navigator.permissions && navigator.permissions.query) {
       try {
-        var preStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        // Release immediately — the SDK will re-acquire
-        preStream.getTracks().forEach(function(t) { t.stop(); });
-      } catch(e) {
-        console.error('Mic pre-acquire failed:', e);
-        var msg = (e.message || e.name || '').toLowerCase();
-        if (msg.indexOf('denied') !== -1 || msg.indexOf('not allowed') !== -1 || msg.indexOf('permission') !== -1) {
+        var micPerm = await navigator.permissions.query({ name: 'microphone' });
+        if (micPerm.state === 'denied') {
           statusEl.className = 'call-status ended';
           statusEl.textContent = '✗ Microphone blocked — check browser settings';
           document.getElementById('btn-start-call').style.display = 'flex';
           return;
         }
-        // Other errors (e.g., NotFoundError for no mic) — let SDK try anyway
-      }
+      } catch(e) { /* permissions.query not supported — continue anyway */ }
     }
 
     if (typeof RetellWebClient === 'undefined') {
@@ -1726,11 +1690,8 @@ async function startCall() {
       return;
     }
 
-    // Tear down any previous client to release mic and WebRTC resources.
-    // Without this, a stale Room can hold the mic lock, causing getUserMedia
-    // to fail silently on the next call attempt.
     if (window._retellClient) {
-      try { window._retellClient.stopCall(); } catch(e) {}
+      try { await window._retellClient.stopCall(); } catch(e) {}
       window._retellClient = null;
     }
 
@@ -1772,30 +1733,11 @@ async function startCall() {
       var banner = document.getElementById('audio-unlock-banner');
       if (banner) banner.style.display = 'none';
 
-      // The SDK fires call_started before setMicrophoneEnabled resolves.
-      // Wait briefly then verify the mic track is actually publishing.
-      // If getUserMedia failed silently, re-attempt it here.
-      setTimeout(async function() {
-        try {
-          var room = window._retellClient && window._retellClient.room;
-          if (!room) return;
-          var localP = room.localParticipant;
-          var micPubs = localP.audioTrackPublications;
-          var hasMic = false;
-          if (micPubs && typeof micPubs.forEach === 'function') {
-            micPubs.forEach(function(pub) { if (pub.track) hasMic = true; });
-          }
-          if (!hasMic) {
-            console.warn('No local mic track detected — re-enabling microphone');
-            await localP.setMicrophoneEnabled(true);
-          }
-        } catch(e) {
-          console.error('Mic verification/recovery failed:', e);
-          var msg = (e.message || '').toLowerCase();
-          if (msg.indexOf('permission') !== -1 || msg.indexOf('not allowed') !== -1 || msg.indexOf('denied') !== -1) {
-            statusEl.textContent = '● Live (mic blocked — check permissions)';
-            addBubble('system', '⚠ Microphone access denied. Please allow mic access and retry.');
-          }
+      setTimeout(() => {
+        const tracks = window._retellClient?.room?.localParticipant?.audioTracks;
+        if (!tracks || tracks.size === 0) {
+          console.warn('[Audio] No mic track detected — re-enabling mic');
+          window._retellClient?.room?.localParticipant?.setMicrophoneEnabled(true);
         }
       }, 1500);
     });
@@ -1834,7 +1776,7 @@ async function startCall() {
     window._retellClient.on('error', (err) => {
       console.error('Retell error:', err);
       if (isIOS) stopIOSSpeakerLock();
-      var msg = (typeof err === 'string') ? err : (err.message || 'Connection failed');
+      var msg = err.message || 'Connection failed';
       // Detect mic permission denial from inside the SDK
       if (msg.match(/permission|not.allowed|denied|blocked/i)) {
         msg = 'Microphone access denied — tap Allow when prompted';
@@ -1844,16 +1786,11 @@ async function startCall() {
       document.getElementById('btn-start-call').style.display = 'flex';
       document.getElementById('btn-end-call').style.display = 'none';
       document.getElementById('btn-speaker').style.display = 'none';
-      stopCallTimer();
     });
 
     await window._retellClient.startCall({ accessToken: window._session.accessToken });
 
-    // Proactively call startAudioPlayback right after startCall while we're
-    // still close to the user gesture context. On some browsers/OS combos the
-    // gesture window is generous enough that this succeeds here, which is more
-    // reliable than waiting for the async call_started event.
-    try { await window._retellClient.startAudioPlayback(); } catch(e) { /* retry happens in call_started */ }
+    try { await window._retellClient.startAudioPlayback(); } catch(e) {}
   } catch(e) {
     statusEl.className = 'call-status ended';
     statusEl.textContent = '✗ ' + e.message;
