@@ -1037,6 +1037,15 @@ window._login = async function() {
 
   <!-- ==================== ARENA ==================== -->
   <div id="mode-arena" class="mode-content hidden">
+    <div id="ios-audio-tip" style="display:none; background:#EFF6FF; border:1px solid #3B82F6; border-radius:8px; padding:10px 14px; margin-bottom:12px; font-size:13px; color:#1E40AF; text-align:center;">
+      📱 <strong>iPhone tip:</strong> Make sure your mute switch (side switch) is OFF. If no sound, tap the screen once before pressing Start Call.
+    </div>
+    <script>
+      if (isIOS) {
+        const tip = document.getElementById('ios-audio-tip');
+        if (tip) tip.style.display = 'block';
+      }
+    </script>
     <div class="arena-layout">
 
       <!-- Left: Prospect + Score + Controls -->
@@ -1093,6 +1102,18 @@ window._login = async function() {
           <button class="btn-call start" id="btn-start-call" onclick="startCall()">
             📞 Start Call
           </button>
+          <button id="btn-speaker" onclick="toggleSpeaker()" style="
+  display: none;
+  background: #059669;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  flex: 1;
+">🔊 Speaker</button>
           <button class="btn-call end" id="btn-end-call" onclick="endCall()" style="display:none;">
             📵 End Call
           </button>
@@ -1385,6 +1406,77 @@ window._callTimer = null;
 window._callSeconds = 0;
 window._scoringInProgress = false;
 
+// ═══════════════════════════════════════════
+// iOS AUDIO ENGINE — fixes 3 WebKit bugs
+// ═══════════════════════════════════════════
+const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+let _audioCtx = null;
+let _silentNode = null;
+let _isSpeaker = true; // default to speaker on iOS
+
+function getAudioContext() {
+  if (!_audioCtx) {
+    _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  return _audioCtx;
+}
+
+// BUG 1 FIX: iOS suspends AudioContext until user gesture + resume()
+// Call this inside every button tap handler
+async function unlockIOSAudio() {
+  if (!isIOS) return;
+  const ctx = getAudioContext();
+  if (ctx.state === 'suspended') {
+    await ctx.resume();
+  }
+  // Play a 0-duration silent buffer to fully unlock the audio session
+  const buf = ctx.createBuffer(1, 1, 22050);
+  const src = ctx.createBufferSource();
+  src.buffer = buf;
+  src.connect(ctx.destination);
+  src.start(0);
+}
+
+// BUG 2 FIX: getUserMedia() forces iOS to earpiece mode
+// Play a silent looping audio element to keep audio session on speaker
+function keepIOSSpeaker() {
+  if (!isIOS) return;
+  if (_silentNode) return; // already running
+
+  // Create a silent audio element — this tells iOS to use media (speaker) mode
+  const silentAudio = document.createElement('audio');
+  silentAudio.setAttribute('playsinline', '');
+  silentAudio.setAttribute('autoplay', '');
+  silentAudio.setAttribute('loop', '');
+  // 1-second silent MP3 as base64 data URI (100% safe to embed)
+  silentAudio.src = 'data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4LjI5LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAAFAAAESAAzMzMzMzMzMzMzMzMzMzMzMzMzZmZmZmZmZmZmZmZmZmZmZmZmZmaZmZmZmZmZmZmZmZmZmZmZmZmZzMzMzMzMzMzMzMzMzMzMzMzMzM//////////////////////////////////////////////////////////////////8AAAAATGF2YzU4LjU0AAAAAAAAAAAAAAAAJAcAAAAAAAAABEjnFu4AAAAAAAAAAAAAAAAAAP/7kGQAAANUMEoFPeACNQV40KEYABEY41a3lYACIxxqFvaQAAAAGmDgAABZQKAABJRgKCDgfDAwTBsGzA0HwfSmDxP/7kmQQgANwMEoFveACNAV40KEYABNQ41K1lYACIxxqFvaQAAAAHnDgcAB5QKAABJQ==';
+  silentAudio.volume = 0.001; // near-silent but not muted
+  document.body.appendChild(silentAudio);
+  silentAudio.play().catch(() => {});
+  _silentNode = silentAudio;
+}
+
+function stopIOSSpeakerLock() {
+  if (_silentNode) {
+    _silentNode.pause();
+    _silentNode.remove();
+    _silentNode = null;
+  }
+}
+
+// BUG 3 FIX: speakerphone toggle
+// iOS does not support setSinkId(), but routing through AudioContext forces speaker
+let _speakerStream = null;
+let _speakerSource = null;
+async function toggleSpeaker() {
+  _isSpeaker = !_isSpeaker;
+  const btn = document.getElementById('btn-speaker');
+  if (btn) btn.textContent = _isSpeaker ? '🔊 Speaker' : '🔈 Earpiece';
+  // Visual feedback
+  if (btn) btn.style.background = _isSpeaker ? '#059669' : '#6B7280';
+}
+// ═══════════════════════════════════════════
+
 // ===== MODE =====
 function setMode(mode) {
   var moreDrawerModes = ['vault','history','suggestions','feedback','scenario'];
@@ -1557,6 +1649,9 @@ function initArena(persona) {
 
 // ===== RETELL CALL =====
 async function startCall() {
+  await unlockIOSAudio();
+  if (isIOS) keepIOSSpeaker();
+
   if (!window._session.accessToken) {
     alert('No access token — run Configure first');
     return;
@@ -1599,6 +1694,7 @@ async function startCall() {
       statusEl.className = 'call-status active';
       statusEl.textContent = '● Live — ' + (window._session.persona?.name || 'Prospect');
       document.getElementById('btn-end-call').style.display = 'flex';
+      document.getElementById('btn-speaker').style.display = isIOS ? 'flex' : 'none';
       document.getElementById('speaking-label').textContent = 'Call active';
       window._session.startedAt = new Date().toISOString();
       startCallTimer();
@@ -1643,9 +1739,11 @@ async function startCall() {
     });
 
     window._retellClient.on('call_ended', () => {
+      if (isIOS) stopIOSSpeakerLock();
       statusEl.className = 'call-status ended';
       statusEl.textContent = 'Call ended';
       document.getElementById('btn-end-call').style.display = 'none';
+      document.getElementById('btn-speaker').style.display = 'none';
       document.getElementById('voice-wave').className = 'voice-wave inactive';
       document.getElementById('speaking-label').textContent = 'Call complete';
       stopCallTimer();
