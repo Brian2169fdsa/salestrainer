@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#1E3348">
-  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>AI Sales Trainer — ManageAI</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -1041,7 +1041,7 @@ window._login = async function() {
       📱 <strong>iPhone tip:</strong> Make sure your mute switch (side switch) is OFF. If no sound, tap the screen once before pressing Start Call.
     </div>
     <script>
-      if (isIOS) {
+      if (/iphone|ipad|ipod/i.test(navigator.userAgent)) {
         const tip = document.getElementById('ios-audio-tip');
         if (tip) tip.style.display = 'block';
       }
@@ -1385,6 +1385,7 @@ window._login = async function() {
 </div><!-- /app-wrapper -->
 
 <script>
+const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
 // ===== CONFIG =====
 const SB_URL = "https://zmyexzebcwpqewczvrtx.supabase.co";
 const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpteWV4emViY3dwcWV3Y3p2cnR4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3ODE5NDEsImV4cCI6MjA4ODM1Nzk0MX0.ajd3XAslr37xQ5C3TIx-F2BwdKgczm1r2W7MfFIf38s";
@@ -1409,7 +1410,6 @@ window._scoringInProgress = false;
 // ═══════════════════════════════════════════
 // iOS AUDIO ENGINE — fixes 3 WebKit bugs
 // ═══════════════════════════════════════════
-const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
 let _audioCtx = null;
 let _silentNode = null;
 let _isSpeaker = true; // default to speaker on iOS
