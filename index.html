@@ -1404,6 +1404,10 @@ window._callTimer = null;
 window._callSeconds = 0;
 window._scoringInProgress = false;
 
+window.addEventListener('unhandledrejection', e => {
+  console.error('[Audio] Unhandled rejection:', e.reason);
+});
+
 // ═══════════════════════════════════════════
 // iOS AUDIO ENGINE — fixes WebKit audio bugs
 // ═══════════════════════════════════════════
@@ -1685,6 +1689,12 @@ async function startCall() {
       document.getElementById('btn-start-call').style.display = 'flex';
       return;
     }
+
+    if (window._retellClient) {
+      try { await window._retellClient.stopCall(); } catch(e) {}
+      window._retellClient = null;
+    }
+
     window._retellClient = new RetellWebClient();
     window._session.lastTranscriptLen = 0;
     window._session.lastRepMsg = null;
@@ -1722,6 +1732,14 @@ async function startCall() {
 
       var banner = document.getElementById('audio-unlock-banner');
       if (banner) banner.style.display = 'none';
+
+      setTimeout(() => {
+        const tracks = window._retellClient?.room?.localParticipant?.audioTracks;
+        if (!tracks || tracks.size === 0) {
+          console.warn('[Audio] No mic track detected — re-enabling mic');
+          window._retellClient?.room?.localParticipant?.setMicrophoneEnabled(true);
+        }
+      }, 1500);
     });
 
     window._retellClient.on('agent_start_talking', () => {
@@ -1771,6 +1789,8 @@ async function startCall() {
     });
 
     await window._retellClient.startCall({ accessToken: window._session.accessToken });
+
+    try { await window._retellClient.startAudioPlayback(); } catch(e) {}
   } catch(e) {
     statusEl.className = 'call-status ended';
     statusEl.textContent = '✗ ' + e.message;
