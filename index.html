@@ -8,7 +8,6 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>AI Sales Trainer — ManageAI</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<script src="./retell-sdk.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -1584,7 +1583,7 @@ async function startSession() {
   }, 1800);
 
   try {
-    const resp = await fetch(N8N_BASE + '/generate-persona', {
+    const resp = await fetch(N8N_BASE + '/create-tavus-call', {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({
@@ -1599,8 +1598,8 @@ async function startSession() {
     const data = await resp.json();
     window._session.id = data.session_id;
     window._session.persona = data.persona;
-    window._session.accessToken = data.access_token;
-    window._session.callId = data.call_id;
+    window._session.conversationUrl = data.conversation_url;
+    window._session.conversationId = data.conversation_id;
     window._session.exchanges = [];
     window._session.scores = [];
     window._session.exchangeCount = 0;
@@ -1651,146 +1650,49 @@ function initArena(persona) {
   document.getElementById('speaking-label').textContent = 'Press Start Call to begin';
 }
 
-// ===== RETELL CALL =====
+// ===== TAVUS CALL =====
 async function startCall() {
-  if (!window._session.accessToken) {
-    alert('No access token — run Configure first');
+  if (!window._session.conversationUrl) {
+    alert('No conversation URL — run Configure first');
     return;
   }
-
-  // Unlock iOS audio pipeline during this user gesture (tap).
-  // Must happen BEFORE any async work so the gesture context is preserved.
   await unlockAudio();
-
-  document.getElementById('btn-start-call').style.display = 'none';
   const statusEl = document.getElementById('call-status');
   statusEl.className = 'call-status connecting';
   statusEl.textContent = 'Connecting...';
-
+  document.getElementById('btn-start-call').style.display = 'none';
   try {
-    // Check mic permission via permissions API (non-blocking, no getUserMedia).
-    // We do NOT call getUserMedia here — on iOS, acquiring and then releasing
-    // a mic stream corrupts the audio session for the Retell SDK's own stream.
-    if (navigator.permissions && navigator.permissions.query) {
-      try {
-        var micPerm = await navigator.permissions.query({ name: 'microphone' });
-        if (micPerm.state === 'denied') {
-          statusEl.className = 'call-status ended';
-          statusEl.textContent = '✗ Microphone blocked — check browser settings';
-          document.getElementById('btn-start-call').style.display = 'flex';
-          return;
-        }
-      } catch(e) { /* permissions.query not supported — continue anyway */ }
+    // Remove any existing frame
+    const existing = document.getElementById('tavus-trainer-frame');
+    if (existing) existing.remove();
+    // Create Tavus iframe
+    const frame = document.createElement('iframe');
+    frame.id = 'tavus-trainer-frame';
+    frame.src = window._session.conversationUrl;
+    frame.allow = 'camera;microphone;autoplay;display-capture';
+    frame.style.cssText = [
+      'width:100%',
+      'height:420px',
+      'border:none',
+      'border-radius:14px',
+      'margin-bottom:14px',
+      'display:block'
+    ].join(';');
+    // Insert at top of transcript panel (right side of arena)
+    const transcriptPanel = document.querySelector('.transcript-panel');
+    if (transcriptPanel) {
+      transcriptPanel.insertBefore(frame, transcriptPanel.firstChild);
     }
-
-    if (typeof RetellWebClient === 'undefined') {
-      statusEl.className = 'call-status ended';
-      statusEl.textContent = '✗ Retell SDK failed to load — refresh the page';
-      document.getElementById('btn-start-call').style.display = 'flex';
-      return;
-    }
-
-    if (window._retellClient) {
-      try { await window._retellClient.stopCall(); } catch(e) {}
-      window._retellClient = null;
-    }
-
-    window._retellClient = new RetellWebClient();
-    window._session.lastTranscriptLen = 0;
-    window._session.lastRepMsg = null;
-
-    window._retellClient.on('call_started', async () => {
-      statusEl.className = 'call-status active';
-      statusEl.textContent = '● Live — ' + (window._session.persona?.name || 'Prospect');
-      document.getElementById('btn-end-call').style.display = 'flex';
-      document.getElementById('btn-speaker').style.display = isIOS ? 'flex' : 'none';
-      document.getElementById('speaking-label').textContent = 'Call active';
-      window._session.startedAt = new Date().toISOString();
-      startCallTimer();
-
-      // iOS: start silent speaker-lock AFTER Retell has acquired the mic.
-      // Doing it before getUserMedia would get killed by the audio session change.
-      if (isIOS) keepIOSSpeaker();
-
-      // Ensure our AudioContext is still running
-      var ctx = getSharedAudioCtx();
-      if (ctx && (ctx.state === 'suspended' || ctx.state === 'interrupted')) {
-        try { await ctx.resume(); } catch(e) {}
-      }
-
-      // Tell Retell SDK to start audio playback (required on iOS Safari).
-      // Retry with increasing delays — iOS sometimes needs time after mic acquire.
-      for (var attempt = 0; attempt < 3; attempt++) {
-        try {
-          await window._retellClient.startAudioPlayback();
-          break;
-        } catch(e) {
-          console.warn('startAudioPlayback attempt ' + (attempt+1) + ' failed:', e);
-          if (attempt < 2) await new Promise(function(r) { setTimeout(r, 300 * (attempt + 1)); });
-        }
-      }
-
-      var banner = document.getElementById('audio-unlock-banner');
-      if (banner) banner.style.display = 'none';
-
-      setTimeout(() => {
-        const tracks = window._retellClient?.room?.localParticipant?.audioTracks;
-        if (!tracks || tracks.size === 0) {
-          console.warn('[Audio] No mic track detected — re-enabling mic');
-          window._retellClient?.room?.localParticipant?.setMicrophoneEnabled(true);
-        }
-      }, 1500);
-    });
-
-    window._retellClient.on('agent_start_talking', () => {
-      const wave = document.getElementById('voice-wave');
-      wave.className = 'voice-wave prospect-speaking';
-      document.getElementById('speaking-label').textContent = (window._session.persona?.name || 'Prospect') + ' is speaking...';
-    });
-
-    window._retellClient.on('agent_stop_talking', () => {
-      const wave = document.getElementById('voice-wave');
-      wave.className = 'voice-wave';
-      document.getElementById('speaking-label').textContent = 'Your turn to speak';
-    });
-
-    window._retellClient.on('update', (update) => {
-      if (update.transcript && update.transcript.length) {
-        handleTranscriptUpdate(update.transcript);
-      }
-    });
-
-    window._retellClient.on('call_ended', () => {
-      if (isIOS) stopIOSSpeakerLock();
-      statusEl.className = 'call-status ended';
-      statusEl.textContent = 'Call ended';
-      document.getElementById('btn-end-call').style.display = 'none';
-      document.getElementById('btn-speaker').style.display = 'none';
-      document.getElementById('voice-wave').className = 'voice-wave inactive';
-      document.getElementById('speaking-label').textContent = 'Call complete';
-      stopCallTimer();
-      addBubble('system', 'Call ended — saving session...');
-      setTimeout(saveAndShowResults, 1500);
-    });
-
-    window._retellClient.on('error', (err) => {
-      console.error('Retell error:', err);
-      if (isIOS) stopIOSSpeakerLock();
-      var msg = err.message || 'Connection failed';
-      // Detect mic permission denial from inside the SDK
-      if (msg.match(/permission|not.allowed|denied|blocked/i)) {
-        msg = 'Microphone access denied — tap Allow when prompted';
-      }
-      statusEl.className = 'call-status ended';
-      statusEl.textContent = '✗ ' + msg;
-      document.getElementById('btn-start-call').style.display = 'flex';
-      document.getElementById('btn-end-call').style.display = 'none';
-      document.getElementById('btn-speaker').style.display = 'none';
-    });
-
-    await window._retellClient.startCall({ accessToken: window._session.accessToken });
-
-    try { await window._retellClient.startAudioPlayback(); } catch(e) {}
+    window._session.startedAt = new Date().toISOString();
+    startCallTimer();
+    statusEl.className = 'call-status active';
+    statusEl.textContent = '● Live — ' +
+      (window._session.persona?.name || 'Prospect');
+    document.getElementById('btn-end-call').style.display = 'flex';
+    document.getElementById('btn-start-call').style.display = 'none';
+    addBubble('system', 'Connected to ' +
+      (window._session.persona?.name || 'your prospect') +
+      ' — speak when ready');
   } catch(e) {
     statusEl.className = 'call-status ended';
     statusEl.textContent = '✗ ' + e.message;
@@ -1799,11 +1701,19 @@ async function startCall() {
 }
 
 function endCall() {
-  if (window._retellClient) {
-    window._retellClient.stopCall();
-  } else {
-    saveAndShowResults();
+  const frame = document.getElementById('tavus-trainer-frame');
+  if (frame) {
+    frame.src = '';
+    frame.remove();
   }
+  stopCallTimer();
+  const statusEl = document.getElementById('call-status');
+  statusEl.className = 'call-status ended';
+  statusEl.textContent = 'Call ended';
+  document.getElementById('btn-end-call').style.display = 'none';
+  document.getElementById('btn-start-call').style.display = 'flex';
+  addBubble('system', 'Call ended — saving session...');
+  setTimeout(saveAndShowResults, 1500);
 }
 
 // ===== TRANSCRIPT =====
