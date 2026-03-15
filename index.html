@@ -213,7 +213,7 @@
     .empty-sub { font-size: 12px; color: var(--text-dim); }
 
     /* ===== CONFIGURE / NEW SESSION ===== */
-    .level-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 24px; }
+    .level-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-bottom: 24px; }
     .level-card {
       border: 2px solid var(--border); border-radius: 12px; padding: 16px 12px;
       text-align: center; cursor: pointer; transition: all 0.2s; background: var(--bg);
@@ -297,8 +297,18 @@
       font-size: 14px; font-weight: 800; letter-spacing: 0.02em;
       transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px;
     }
-    .btn-call.start { background: var(--green); color: #fff; }
-    .btn-call.start:hover:not(:disabled) { background: #15803d; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(22,163,74,0.35); }
+    .btn-call.start {
+      background: linear-gradient(135deg, #1a5fb4, #4a90d9);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(74,144,217,0.35);
+      font-size: 15px;
+      font-weight: 700;
+    }
+    .btn-call.start:hover:not(:disabled) {
+      background: linear-gradient(135deg, #1a4f9e, #3a7ec4);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 22px rgba(74,144,217,0.5);
+    }
     .btn-call.end { background: var(--red); color: #fff; }
     .btn-call.end:hover:not(:disabled) { background: #b91c1c; }
     .btn-call:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -855,6 +865,18 @@ window._login = async function() {
             <div class="res-pip filled"></div><div class="res-pip filled"></div><div class="res-pip filled"></div><div class="res-pip filled"></div><div class="res-pip filled"></div>
           </div>
         </div>
+        <div class="level-card" id="level-card-6" onclick="selectLevel(6,this)">
+          <div class="level-num" style="color:var(--purple)">6</div>
+          <div class="level-name">Real Deal</div>
+          <div class="level-desc">Live Friday context — real company, real pain</div>
+          <div class="level-resistance">
+            <div class="res-pip filled"></div>
+            <div class="res-pip filled"></div>
+            <div class="res-pip filled"></div>
+            <div class="res-pip filled"></div>
+            <div class="res-pip filled" style="background:var(--purple)"></div>
+          </div>
+        </div>
       </div>
 
       <div class="section-label" style="margin-top:8px;margin-bottom:12px;">Industry Vertical</div>
@@ -969,7 +991,10 @@ window._login = async function() {
         <div class="call-controls">
           <div class="call-status" id="call-status">Ready to start</div>
           <button class="btn-call start" id="btn-start-call" onclick="startCall()">
-            📹 Start Video Call
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="white" style="flex-shrink:0;">
+              <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
+            </svg>
+            Video Call with <span id="btn-call-persona-name">Prospect</span>
           </button>
           <button class="btn-call end" id="btn-end-call" onclick="endCall()" style="display:none;">
             📵 End Call
@@ -1023,6 +1048,7 @@ window._login = async function() {
       <div class="grade-circle b" id="result-grade-circle">B</div>
       <div class="results-score" id="result-overall-score">—</div>
       <div class="results-sub" id="result-summary">Session results will appear here</div>
+      <div id="result-call-outcome" style="display:none;margin-top:8px;padding:4px 14px;background:rgba(255,255,255,0.12);border-radius:20px;font-size:12px;font-weight:700;color:#fff;position:relative;z-index:1;"></div>
     </div>
     <div class="results-grid">
       <div class="results-dim-card">
@@ -1312,7 +1338,7 @@ function selectLevel(n, el) {
   window._session.level = n;
   document.querySelectorAll('.level-card').forEach(c => c.classList.remove('active'));
   el.classList.add('active');
-  const names = {1:'Rookie',2:'Developing',3:'Competent',4:'Advanced',5:'Elite'};
+  const names = {1:'Rookie',2:'Developing',3:'Competent',4:'Advanced',5:'Elite',6:'Real Deal'};
   document.getElementById('cfg-level-disp').textContent = n + ' — ' + names[n];
   const fridayDisp = document.getElementById('cfg-friday-disp');
   if (n >= 3) {
@@ -1369,7 +1395,8 @@ async function startSession() {
         level: window._session.level,
         vertical: window._session.vertical,
         user_id: window._currentUser?.id || 'anon',
-        user_name: window._currentUser?.name || 'Rep'
+        user_name: window._currentUser?.name || 'Rep',
+        use_friday_context: window._session.level === 6
       })
     });
     clearInterval(stepInterval);
@@ -1408,6 +1435,11 @@ function initArena(persona) {
   document.getElementById('prospect-role').textContent = (persona.role || '') + (persona.company ? ' @ ' + persona.company : '');
   document.getElementById('prospect-company').textContent = persona.company || '—';
   document.getElementById('prospect-city').textContent = persona.city || '—';
+  var callNameEl = document.getElementById('btn-call-persona-name');
+  if (callNameEl) callNameEl.textContent = (persona.name || 'Prospect').split(' ')[0];
+  var vertLabel = {construction:'🏗️ Construction',medical_transport:'🚐 Medical Transport',automotive:'🚗 Automotive',behavioral_health:'🧠 Behavioral Health',general_smb:'💼 General SMB'}[window._session.vertical] || window._session.vertical;
+  var cityEl = document.getElementById('prospect-city');
+  if (cityEl) cityEl.textContent = (persona.city || '—') + ' · ' + vertLabel;
   const barsEl = document.getElementById('resistance-bars');
   const level = window._session.level;
   barsEl.innerHTML = [1,2,3,4,5].map(i =>
@@ -1564,14 +1596,22 @@ async function endCall() {
   if (pttStatus) { pttStatus.textContent = 'HOLD TO TALK'; pttStatus.style.color = '#64748b'; }
 
   const arenaStatus = document.getElementById('call-status');
-  if (arenaStatus) { arenaStatus.textContent = 'Call ended'; arenaStatus.className = 'call-status ended'; }
-  stopCallTimer();
-  addBubble('system', 'Call ended — saving your session...');
+  if (arenaStatus) {
+    arenaStatus.textContent = 'Call ended';
+    arenaStatus.className = 'call-status ended';
+  }
+  window._session.callOutcome = '';  // will be filled by STR-018 end_training_call event if available
+  if (typeof stopCallTimer === 'function') stopCallTimer();
+  if (typeof addBubble === 'function') {
+    addBubble('system', 'Call ended — saving your session...');
+  }
 
   document.getElementById('voice-wave').className = 'voice-wave inactive';
   document.getElementById('speaking-label').textContent = 'Call ended';
 
-  setTimeout(function() { saveAndShowResults(); }, 1500);
+  setTimeout(function() {
+    if (typeof saveAndShowResults === 'function') saveAndShowResults();
+  }, 1500);
 }
 
 function endTrainerCall() { endCall(); }
@@ -1814,6 +1854,12 @@ async function saveAndShowResults() {
   gradeEl.className = 'grade-circle ' + grade.toLowerCase();
   document.getElementById('result-overall-score').textContent = overall;
   document.getElementById('result-summary').textContent = 'Level ' + session.level + ' · ' + session.vertical.replace(/_/g,' ') + ' · ' + session.exchangeCount + ' exchanges · ' + formatTime(window._callSeconds);
+  var outcomeEl = document.getElementById('result-call-outcome');
+  if (outcomeEl && session.callOutcome) {
+    var outcomeLabels = { meeting_booked:'📅 Meeting Booked', callback_agreed:'📞 Callback Agreed', demo_scheduled:'🖥️ Demo Scheduled', send_info:'📧 Send Info', not_interested:'❌ Not Interested', hung_up:'📵 Hung Up' };
+    outcomeEl.textContent = outcomeLabels[session.callOutcome] || session.callOutcome;
+    outcomeEl.style.display = 'inline-block';
+  }
   safeSet('r-tech-score', avgs.technique || '—');
   safeSet('r-emp-score', avgs.empathy || '—');
   safeSet('r-clar-score', avgs.clarity || '—');
@@ -1874,9 +1920,10 @@ async function loadDashboard() {
     const levelCounts = {};
     all.forEach(r => { levelCounts[r.level] = (levelCounts[r.level]||0)+1; });
     const maxLvl = Math.max(...Object.values(levelCounts), 1);
-    const levelNames = {1:'Rookie',2:'Developing',3:'Competent',4:'Advanced',5:'Elite'};
-    document.getElementById('d-level-dist').innerHTML = [1,2,3,4,5].map(l =>
-      '<div class="trend-row"><div class="trend-label">' + levelNames[l] + '</div>' +
+    const levelNames = {1:'Rookie',2:'Developing',3:'Competent',4:'Advanced',5:'Elite',6:'Real Deal'};
+    document.getElementById('d-level-dist').innerHTML = [1,2,3,4,5,6].map(l =>
+      '<div class="trend-row">' +
+      '<div class="trend-label">' + levelNames[l] + '</div>' +
       '<div class="trend-track"><div class="trend-fill" style="width:' + Math.round(((levelCounts[l]||0)/maxLvl)*100) + '%;background:var(--accent)"></div></div>' +
       '<div class="trend-pct" style="color:var(--text-mid);">' + (levelCounts[l]||0) + '</div></div>'
     ).join('');
@@ -2019,9 +2066,25 @@ async function loadCoachingPlan(userId) {
       body: JSON.stringify({ userId })
     });
     const data = await r.json();
-    if (data.plan) { localStorage.setItem('coaching_' + userId, JSON.stringify(data)); renderCoachingPlan(data); }
-    else { document.getElementById('coaching-card').style.display = 'none'; }
-  } catch(e) { document.getElementById('coaching-card').style.display = 'none'; }
+    if (data.plan) {
+      localStorage.setItem('coaching_' + userId, JSON.stringify(data));
+      renderCoachingPlan(data);
+    } else {
+      document.getElementById('coaching-loading').style.display = 'none';
+      document.getElementById('coaching-content').style.display = 'block';
+      document.getElementById('coaching-strength').textContent = 'Complete your first session to unlock your coaching plan';
+      document.getElementById('coaching-weakness').textContent = 'Start with Level 1 to establish your baseline';
+      document.getElementById('coaching-points').innerHTML = '<div style="font-size:13px;color:var(--text-dim);">Your personalized coaching plan will appear here after your first scored session.</div>';
+      document.getElementById('coaching-recommended').textContent = 'Start → Level 1';
+    }
+  } catch(e) {
+    document.getElementById('coaching-loading').style.display = 'none';
+    document.getElementById('coaching-content').style.display = 'block';
+    document.getElementById('coaching-strength').textContent = 'Complete your first session to unlock your coaching plan';
+    document.getElementById('coaching-weakness').textContent = 'Start with Level 1 to establish your baseline';
+    document.getElementById('coaching-points').innerHTML = '<div style="font-size:13px;color:var(--text-dim);">Your personalized coaching plan will appear here after your first scored session.</div>';
+    document.getElementById('coaching-recommended').textContent = 'Start → Level 1';
+  }
 }
 
 function renderCoachingPlan(data) {
@@ -2062,7 +2125,7 @@ async function loadLearningFeed() {
     const items = await r.json();
     const el = document.getElementById('learning-feed-container');
     if (!items.length) {
-      el.innerHTML = '<div style="color:var(--text-dim);font-size:13px;text-align:center;padding:24px;background:var(--surface);border-radius:10px;">No team highlights yet — complete a session to get started</div>';
+      el.innerHTML = '<div style="color:var(--text-dim);font-size:13px;text-align:center;padding:24px;background:var(--surface);border-radius:10px;">Complete your first training session to generate team highlights. Leaderboard and learning feed activate after your first scored call.</div>';
       return;
     }
     const dimColors = { technique:'#4A8FD6', empathy:'#10b981', clarity:'#8b5cf6', advancement:'#f59e0b' };
@@ -2168,6 +2231,15 @@ function closeMoreDrawer() { document.getElementById('more-drawer-overlay').clas
 
 // ===== INIT =====
 (function() {
+  // Close popover on backdrop click — deferred to DOMContentLoaded since popover HTML is after this script
+  document.addEventListener('DOMContentLoaded', function() {
+    var pop = document.getElementById('trainer-video-popover');
+    if (pop) {
+      pop.addEventListener('click', function(e) {
+        if (e.target === pop) endTrainerCall();
+      });
+    }
+  });
   const token = sessionStorage.getItem('st_token');
   const user = sessionStorage.getItem('st_user');
   if (token && user) {
@@ -2328,6 +2400,42 @@ function closeMoreDrawer() { document.getElementById('more-drawer-overlay').clas
     if (exNumEl) observer.observe(exNumEl, { childList: true, characterData: true, subtree: true });
   });
 })();
+</script>
+
+<script>
+// Sync popover scoring strip with main arena scores after every score update
+function syncPopoverScores() {
+  var popover = document.getElementById('trainer-video-popover');
+  if (!popover || popover.style.display === 'none') return;
+
+  var fields = [
+    ['dim-tech-val',  'pop-tech'],
+    ['dim-emp-val',   'pop-emp'],
+    ['dim-clar-val',  'pop-clar'],
+    ['dim-adv-val',   'pop-adv'],
+    ['exchange-num',  'pop-exchange']
+  ];
+
+  fields.forEach(function(pair) {
+    var src = document.getElementById(pair[0]);
+    var dst = document.getElementById(pair[1]);
+    if (src && dst && src.textContent !== '—') {
+      dst.textContent = src.textContent;
+    }
+  });
+}
+// Hook into updateDimBars to auto-sync
+var _origUpdateDimBars = window.updateDimBars;
+window.updateDimBars = function(tech, emp, clar, adv) {
+  if (_origUpdateDimBars) _origUpdateDimBars(tech, emp, clar, adv);
+  setTimeout(syncPopoverScores, 100);
+};
+// Also sync when exchange counter increments
+var _origExchangeEl = document.getElementById('exchange-num');
+if (_origExchangeEl) {
+  var exchObserver = new MutationObserver(function() { setTimeout(syncPopoverScores, 50); });
+  exchObserver.observe(_origExchangeEl, { childList: true, characterData: true, subtree: true });
+}
 </script>
 
 </body>
